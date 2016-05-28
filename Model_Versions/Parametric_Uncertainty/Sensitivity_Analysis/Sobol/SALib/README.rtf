@@ -1,0 +1,156 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red163\green21\blue21;\red52\green52\blue52;}
+\margl1440\margr1440\vieww18020\viewh13160\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 ============================================\
+Sobol Sensitivity Analysis using Sensitivity Analysis Library (SALib)\
+============================================\
+\
+Author and copyright: Perry Oddo\
+Pennsylvania State University\
+poddo@psu.edu\
+\
+-------------------------------\
+ Copyright and License Notice\
+------------------------------\
+Distributed under GNU general public license\
+No warranty\
+\
+------------------------------\
+Introduction\
+------------------------------\
+\
+This Sobol Sensitivity analysis uses a Python-based framework which can be found at:\
+\expnd0\expndtw0\kerning0
+https://github.com/SALib/SALib\
+\
+Other useful resources for running analysis can be found at:\
+https://waterprogramming.wordpress.com/2013/08/05/running-sobol-sensitivity-analysis-using-salib/\
+\
+\kerning1\expnd0\expndtw0 ------------------------------\
+Running Code\
+------------------------------\
+\expnd0\expndtw0\kerning0
+\
+1) Navigate to \ul SALib\ulnone  folder and set it as your working directory.\
+\
+2) Create text file (\'93
+\f1\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 params.txt
+\f0\fs24 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \'94) with sampling bounds for model parameters with the form: \
+
+\b \expnd0\expndtw0\kerning0
+	[parameter] [lower bound] [upper bound]\
+\
+
+\b0 \expnd0\expndtw0\kerning0
+Copy the file to the \ul Parameters\ulnone  folder. An example file will look like the following (space delimited):\
+\
+	p_zero_p 0.00145547134677826 0.0103291400402778\
+	alpha_p 2.20172036260802 3.02823733602667\
+	V_p 16272295575.9362 23796446374.7584\
+	delta_prime_p 0.0133436380576922 0.0294432466548024\
+	k_p 23690525.9101367 57131421.2684883\
+	subs_rate 0.00130539457325652 0.00293557198176056\
+	sea_level_rate 0.00537329522765272 0.0123023565105383\
+\
+\
+
+\i *Note: the included bash script contains a function that finds the upper and lower bounds for all parameters automatically. This function can be commented out if parameters are entered into a text file manually.
+\i0 \
+\
+3) \cf3 \expnd0\expndtw0\kerning0
+Run 
+\b sh Sobol_Uncertainty_SALib.sh 
+\b0 using inputs for the model
+\b \
+	\
+
+\b0 This bash script accomplishes the following:\
+	- Generates 1,000 initial samples using the pseudo-random Sobol sequence.\
+	- Uses Saltelli method of cross-sampling to then generate 16,000 parameter sets (\'93
+\f1\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 sobolParameterSets.txt
+\f0\fs24 \cf3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \'94) to run through the model.\
+	- Runs parameter sets through the van Dantzig (1956) model (\'93
+\f1\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 Sobol_Uncertainty_SALib.R
+\f0\fs24 \cf3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \'94)\
+	- Uses model output (\'93objectiveValues.txt\'94) to calculate 
+\f1\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 sobolIndices 
+\f0\fs24 \cf3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 files for each of the four objectives into the \ul Output\ulnone  folder:\
+		\'93sobolIndices_total_costs.txt\'94\cf0 \expnd0\expndtw0\kerning0
+\
+\cf3 \expnd0\expndtw0\kerning0
+		\'93sobolIndices_costs.txt\'94\
+		\'93sobolIndices_damages.txt\'94\
+		\'93sobolIndices_reliability.txt\'94\
+\
+4) Interpret the results in the \ul Output\ulnone  folder. An example output file will look like the following:\
+\
+	Parameter S1 S1_conf ST ST_conf\
+	p_zero_p 0.362262 0.102905 0.467603 0.062493\
+	alpha_p 0.388987 0.116497 0.488950 0.057855\
+	V_p 0.000000 0.000000 0.000000 0.000000\
+	delta_prime_p 0.000000 0.000000 0.000000 0.000000\
+	k_p 0.000000 0.000000 0.000000 0.000000\
+	subs_rate 0.008084 0.014891 0.009428 0.001358\
+	sea_level_rate 0.113786 0.059565 0.153831 0.020227\
+\
+	Parameter_1 Parameter_2 S2 S2_conf\
+	p_zero_p alpha_p 0.058877 0.215053\
+	p_zero_p V_p -0.015153 0.191370\
+	p_zero_p delta_prime_p -0.015153 0.191370\
+	p_zero_p k_p -0.015153 0.191370\
+	p_zero_p subs_rate -0.014840 0.192023\
+	p_zero_p sea_level_rate 0.002942 0.196526\
+	alpha_p V_p 0.016165 0.218251\
+	alpha_p delta_prime_p 0.016165 0.218251\
+	alpha_p k_p 0.016165 0.218251\
+	alpha_p subs_rate 0.017235 0.219717\
+	alpha_p sea_level_rate 0.028324 0.224478\
+	V_p delta_prime_p 0.000000 0.000000\
+	V_p k_p 0.000000 0.000000\
+	\'85\
+\
+5) Plot the results as a radial convergence diagram:\
+	R script for plotting:\
+	\'93radialPlot_vanDantzig.R\'94\
+		Source code authored by:
+\b  Calvin Whealton\
+		
+\b0 Cornell University\
+		caw324@cornell.edu
+\b \
+		\
+		
+\b0 Modified by 
+\b Perry Oddo
+\b0 \
+\
+Source code for sensitivity plot R scripts can be found here:\
+https://github.com/calvinwhealton/SensitivityAnalysisPlots\
+\
+\cf0 \expnd0\expndtw0\kerning0
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\fs28 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b\fs24 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0\fs46 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\fs24 \cf0 \kerning1\expnd0\expndtw0 \
+}

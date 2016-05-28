@@ -1,0 +1,162 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red163\green21\blue21;\red52\green52\blue52;}
+\margl1440\margr1440\vieww16580\viewh13160\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 ============================================\
+Sobol Sensitivity Analysis using MOEAFramework \
+============================================\
+\
+Author and copyright: Perry Oddo\
+Pennsylvania State University\
+poddo@psu.edu\
+\
+-------------------------------\
+ Copyright and License Notice\
+------------------------------\
+Distributed under GNU general public license\
+No warranty\
+\
+------------------------------\
+Introduction\
+------------------------------\
+\
+This Sobol Sensitivity analysis uses a Java-based MOEAFramework method, as described in:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+{\field{\*\fldinst{HYPERLINK "https://waterprogramming.wordpress.com/2012/08/13/running-sobol-sensitivity-analysis-using-moeaframework/"}}{\fldrslt 
+\b \cf0 \expnd0\expndtw0\kerning0
+Running Sobol Sensitivity Analysis using\'a0MOEAFramework}}\expnd0\expndtw0\kerning0
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \kerning1\expnd0\expndtw0 ------------------------------\
+Running Code\
+------------------------------\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+\
+1) Navigate to the \expnd0\expndtw0\kerning0
+\ul Java\expnd0\expndtw0\kerning0
+\ulnone  folder and set it as your working directory.\
+\
+2) Create text file (\'93
+\f1\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 params.txt
+\f0\fs24 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \'94) with upper and lower sampling bounds for model parameters, using the form: \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b \cf0 \expnd0\expndtw0\kerning0
+	[parameter] [lower bound] [upper bound]\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0 \cf0 \expnd0\expndtw0\kerning0
+Copy the file to the \expnd0\expndtw0\kerning0
+\ul Parameters\expnd0\expndtw0\kerning0
+\ulnone  folder. An example file will look like the following (space delimited):\
+\
+	p_zero_p 0.00145547134677826 0.0103291400402778\
+	alpha_p 2.20172036260802 3.02823733602667\
+	V_p 16272295575.9362 23796446374.7584\
+	delta_prime_p 0.0133436380576922 0.0294432466548024\
+	k_p 23690525.9101367 57131421.2684883\
+	subs_rate 0.00130539457325652 0.00293557198176056\
+	sea_level_rate 0.00537329522765272 0.0123023565105383\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\i \cf0 \expnd0\expndtw0\kerning0
+*Note: the included bash script contains a function that finds the upper and lower bounds for all parameters automatically. This function can be commented out if parameters are entered into a text file manually.
+\i0 \expnd0\expndtw0\kerning0
+\
+\
+3) \cf3 \expnd0\expndtw0\kerning0
+Run 
+\b sh SobolAnalysis.sh 
+\b0 using inputs for the model
+\b \
+	\
+
+\b0 This bash script accomplishes the following:\
+	- Generates 1,000 initial samples using the pseudo-random Sobol sequence.\
+	- Uses Saltelli method of cross-sampling to then generate 16,000 parameter sets (\'93
+\f1\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 sobolParameterSets.txt
+\f0\fs24 \cf3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \'94) to run through the model.\
+	- Runs parameter sets through the van Dantzig (1956) model (\'93
+\f1\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 Sobol_vanDantzig.R
+\f0\fs24 \cf3 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \'94)\
+	- Uses model output (\'93objectiveValues.txt\'94) to calculate 
+\f1\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 sobolIndices
+\f0\fs24 \cf3 \expnd0\expndtw0\kerning0
+\CocoaLigature1  files for each of the four objectives into the \expnd0\expndtw0\kerning0
+\ul Output\expnd0\expndtw0\kerning0
+\ulnone  folder:\
+		\'93sobolIndices_total_costs.txt\'94\cf0 \expnd0\expndtw0\kerning0
+\
+\cf3 \expnd0\expndtw0\kerning0
+		\'93sobolIndices_costs.txt\'94\
+		\'93sobolIndices_damages.txt\'94\
+		\'93sobolIndices_reliability.txt\'94\
+\
+4) Interpret the results in the \expnd0\expndtw0\kerning0
+\ul Output\expnd0\expndtw0\kerning0
+\ulnone  folder. An example output file will look like the following:\
+\
+	Parameter	Sensitivity [Confidence]\
+	First-Order Effects\
+	  p_zero_p 0.3568668115621899 [0.05298553077118346]\
+	  alpha_p 0.39323531146082125 [0.05911009349973872]\
+	  V_p 1.6916589895882618E-5 [6.222775755630736E-5]\
+	  delta_prime_p 1.6916589895882618E-5 [6.34555961740959E-5]\
+	  k_p 1.6916589895882618E-5 [6.206719223396194E-5]\
+	  subs_rate 0.00784223775860874 [0.008816396000711744]\
+	  sea_level_rate 0.11548118484839276 [0.032569948614481786]\
+	Total-Order Effects\
+	  p_zero_p 0.44622639946862375 [0.07048867383243149]\
+	  alpha_p 0.4912488876620692 [0.06466071736731081]\
+	  V_p 0.0 [0.0]\
+	  delta_prime_p 0.0 [0.0]\
+	  k_p 0.0 [0.0]\
+	  subs_rate 0.008168655732063157 [0.014663031018631784]\
+	  sea_level_rate 0.15357648594607676 [0.049523872743110355]\
+	Second-Order Effects\
+	  p_zero_p * alpha_p 0.06957417082412115 [0.10317983460049478]\
+	  p_zero_p * V_p -0.005512698448567508 [0.08455594856625025]\
+	  p_zero_p * delta_prime_p -0.005512698448567508 [0.08437611748020303]\
+	  p_zero_p * k_p -0.005512698448567508 [0.08327024086476327]\
+	  p_zero_p * subs_rate -0.00519580438918475 [0.08562729894474239]\
+	  p_zero_p * sea_level_rate 0.012840450425146272 [0.08558682748623678]\
+	  alpha_p * V_p 0.012124342108211021 [0.08818866127594048]\
+	  alpha_p * delta_prime_p 0.012124342108211021 [0.0875498426806565]\
+	  alpha_p * k_p 0.012124342108211021 [0.09033925229784502]\
+  	\'85	\
+\
+5) Plot results as a radial convergence diagram:\
+	Matlab scripts for plotting\
+	\'93plot_cdice_new_sobols_7on30.m\'94 \
+		Authored by: 
+\b Martha Butler
+\b0 \
+		Pennsylvania State University\
+		mpb186@psu.edu\
+\
+	\'93sobolPlot.m\'94\
+		Authored by: 
+\b David Hadka
+\b0 \
+		Pennsylvania State University\
+		dmh309@psu.edu
+\b \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0\fs46 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\fs24 \cf0 \kerning1\expnd0\expndtw0 	\
+	}
