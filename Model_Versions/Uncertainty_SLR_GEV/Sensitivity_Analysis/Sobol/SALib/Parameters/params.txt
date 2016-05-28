@@ -1,0 +1,12 @@
+V_p 0 1
+delta_prime_p 0 1
+k_p 0 1
+subs_rate 0 1
+a 0 1
+b 0 1
+c 0 1
+t.star 0 1
+c.star 0 1
+xi 0 1
+mu 0 1
+sigma 0 1
