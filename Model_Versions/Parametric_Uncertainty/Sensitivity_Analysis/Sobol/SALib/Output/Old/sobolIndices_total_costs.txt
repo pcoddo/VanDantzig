@@ -1,0 +1,31 @@
+Parameter S1 S1_conf ST ST_conf
+p_zero_p 0.067948 0.115320 0.088216 0.014365
+alpha_p 0.075386 0.124748 0.098897 0.013405
+V_p 0.007161 0.031523 0.006215 0.001079
+delta_prime_p 0.008236 0.053017 0.018236 0.003018
+k_p 0.779665 0.341690 0.784912 0.060555
+subs_rate -0.000067 0.013406 0.001199 0.000199
+sea_level_rate 0.016907 0.056053 0.020085 0.002952
+
+Parameter_1 Parameter_2 S2 S2_conf
+p_zero_p alpha_p 0.011409 0.217230
+p_zero_p V_p -0.002010 0.213732
+p_zero_p delta_prime_p -0.000107 0.214785
+p_zero_p k_p -0.001329 0.215878
+p_zero_p subs_rate -0.002422 0.213933
+p_zero_p sea_level_rate -0.001006 0.214143
+alpha_p V_p 0.006175 0.235660
+alpha_p delta_prime_p 0.008044 0.236024
+alpha_p k_p 0.005902 0.238267
+alpha_p subs_rate 0.005215 0.235340
+alpha_p sea_level_rate 0.006408 0.235489
+V_p delta_prime_p -0.002779 0.057931
+V_p k_p -0.003009 0.058168
+V_p subs_rate -0.003261 0.057800
+V_p sea_level_rate -0.002654 0.057963
+delta_prime_p k_p 0.005568 0.099192
+delta_prime_p subs_rate 0.012024 0.096461
+delta_prime_p sea_level_rate 0.012683 0.096926
+k_p subs_rate 0.011392 0.674044
+k_p sea_level_rate 0.009125 0.674123
+subs_rate sea_level_rate 0.001126 0.025048
