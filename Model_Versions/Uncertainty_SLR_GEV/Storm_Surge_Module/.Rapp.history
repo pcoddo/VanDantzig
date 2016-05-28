@@ -1,0 +1,79 @@
+lib()
+ls()
+list.files()
+library()
+test <- c(0,1,1,0)
+ls
+ls()
+rm(list = ls())
+ls()
+test <- rnorm(100)
+hist(test)
+plot(rnorm(100), rnorm(100))
+plot(hist(rnorm(100)))
+plot(hist(rnorm(100)), col = "red")
+data(quakes)
+colnames(quakes)
+inputs <- quakes[,c(1:3,5)]  #could also do quakes[,-4]
+library(sdtoolkit)
+?sdtoolkit
+yout <- quakes[,"mag"] #could also do quakes[,4]
+list.files()
+ls()
+yout
+ls()
+ythresh <- 1*(yout>5.0)
+myboxes <- sdprim(x=inputs, y=ythresh)
+yes
+1
+ls()
+myboxes
+myboxes <- sdprim(x=inputs, y=yout, thresh=5.0, threshtype=">")
+list.files()
+ls()
+list = ls()
+rm(list = ls())
+ls()
+data(iris)
+inputs <- iris[c(1,3)]
+yout <- iris[,4]
+myboxes <- sdprim(x = inputs, y = yout, thresh = 1.2, threshtype = ">")
+library(sdtoolkit)
+myboxes <- sdprim(x = inputs, y = yout, thresh = 1.2, threshtype = ">")
+getwd()
+setwd("~/Documents/Grad/SCRiM/Scripts/")
+list.files()
+open("TideGauge.R")
+rm(list = ls())
+graphics.off()
+library(zoo)
+library(extRemes)
+library(fExtremes)
+library(lubridate)
+setwd("/Users/puo112/Documents/Grad/SCRiM/Tide Gauge")
+source("put_fig_letter.r")
+tide1 = read.table("3hr.txt", header = TRUE, sep = '\t')
+tide2 = read.table("1hr.txt", header = TRUE, sep = '\t')
+tide3 = read.table("10min.87.99.txt", header = TRUE, sep = '\t')
+tide4 = read.table("10min.00.15.txt", header = TRUE, sep = '\t')
+data = rbind(tide1, tide2, tide3, tide4)
+rm(tide1, tide2, tide3, tide4)
+data$date2 <- as.Date(as.character(data[,1]), format="%Y%m%d")#
+data$date.time <- as.POSIXct(paste(data[,1], data[,2]), format = "%Y%m%d %H:%M")#
+data$date.id <- as.numeric(as.factor(with(data, paste(date2))))#
+data$month.id <- as.numeric(as.factor(with(data, as.yearmon(paste(date2)))))#
+#data$unique.id <- index(data[,1])#
+#data <- na.omit(data) # Remove NA's
+sl <- zoo(data$sl, order.by=data$date.time)
+as.year <- function(x) floor(as.numeric(as.yearmon(x)))
+day.max <- aggregate(sl, as.Date, max)
+year.max <- aggregate(sl, as.year, max)
+day.mean <- aggregate(sl, as.Date, mean)#
+month.mean <- aggregate(sl, as.yearmon, mean)#
+year.mean <- aggregate(sl, as.year, mean)
+daily <- data.frame(index(day.max), coredata(day.mean), coredata(day.max))#
+monthly <- data.frame(index(month.max), coredata(month.mean), coredata(month.max))#
+annual <- data.frame(index(year.max), coredata(year.mean), coredata(year.max))
+load("/Users/puo112/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module/tide_gauge_precomputed.RData")
+load("/Users/puo112/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module/MCMC_coredata.RData")
+list.files()

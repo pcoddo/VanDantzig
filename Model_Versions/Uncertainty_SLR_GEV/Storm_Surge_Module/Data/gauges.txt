@@ -1,0 +1,1 @@
+location	longitude	latitudeHoek_van_Holland	4.12	51.9775Delfzijl	6.933056	53.326389
