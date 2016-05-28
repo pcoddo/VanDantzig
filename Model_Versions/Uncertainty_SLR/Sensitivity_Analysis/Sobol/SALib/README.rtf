@@ -1,0 +1,103 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red52\green52\blue52;}
+\margl1440\margr1440\vieww12600\viewh7800\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 ============================================\
+Sobol Sensitivity Analysis using Sensitivity Analysis Library (SALib)\
+============================================\
+\
+Author and copyright: Perry Oddo\
+Pennsylvania State University\
+poddo@psu.edu\
+\
+-------------------------------\
+ Copyright and License Notice\
+------------------------------\
+Distributed under GNU general public license\
+No warranty\
+\
+------------------------------\
+Introduction\
+------------------------------\
+\
+This Sobol Sensitivity Analysis uses a Python-based framework which can be found at\
+\expnd0\expndtw0\kerning0
+https://github.com/SALib/SALib\
+\
+\kerning1\expnd0\expndtw0 ------------------------------\
+Running Code\
+------------------------------\
+\expnd0\expndtw0\kerning0
+\
+1) Navigate to \
+\
+2) Create text file (\'93params.txt\'94) with sampling bounds for model parameters with the form: \
+
+\b \expnd0\expndtw0\kerning0
+	[parameter] [lower bound] [upper bound]\
+\
+
+\b0 \expnd0\expndtw0\kerning0
+Copy it to appropriate directory. For example:\
+\
+	p_zero_p	0.00138980784995238	0.0105275630897867\
+	alpha_p	2.18867771306392	2.97685362844277\
+	V_p	16268459349.5666	24027197656.6484  \
+	delta_prime_p	0.0132987033170827	0.0297774711798088\
+	k_p	25222127.7962135	56903711.064668\
+	subs_rate	0.00478793729217205	0.0105023748746371\
+	sea_level_rate	0.00597990292766278	0.0131120259661431\
+\
+3) \cf2 \expnd0\expndtw0\kerning0
+Run 
+\b sh SobolAnalysis.sh\
+	\
+
+\b0 This bash script accomplishes the following:\
+	- Generates 1,000 parameter sets using the Sobol Sequence (\'93sobolParameterSets.txt\'94)\
+	- Uses Saltelli method of cross-sampling is then used to generate 16,000 parameter sets (\'93sobolParams.txt\'94) \
+	- Runs parameter sets through the van Dantzig (1956) model (\'93Sobol_vanDantzig.R\'94)\
+	- Uses model output (\'93objectiveValues.txt\'94) to calculate Sobol Indices:\
+		\'93sobolIndices_total_costs.txt\'94\cf0 \expnd0\expndtw0\kerning0
+\
+\cf2 \expnd0\expndtw0\kerning0
+		\'93sobolIndices_costs.txt\'94\
+		\'93sobolIndices_damages.txt\'94\
+		\'93sobolIndices_reliability.txt\'94\
+\
+4) Interpret and graph results using Matlab scripts:\
+	\'93plot_cdice_new_sobols_7on30.m\'94 \
+		Authored by: 
+\b Martha Butler
+\b0 \
+		Pennsylvania State University\
+		mpb186@psu.edu\
+\
+	\'93sobolPlot.m\'94\
+		Authored by: 
+\b David Hadka
+\b0 \
+		Pennsylvania State University\
+		dmh309@psu.edu\cf0 \expnd0\expndtw0\kerning0
+\
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\fs28 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b\fs24 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0\fs46 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\fs24 \cf0 \kerning1\expnd0\expndtw0 \
+}
