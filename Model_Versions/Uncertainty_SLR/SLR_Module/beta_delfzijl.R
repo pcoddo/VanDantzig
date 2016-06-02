@@ -491,7 +491,7 @@ write.table(beta.dist,file="./Output/array_beta.txt", quote=FALSE, col.names=TRU
 
 
 # zoom into the joint distribution of t.star and c.star 
-figure(pdf(file="Figures/c*vst*.pdf"))
+figure(pdf(file="Figures/cstar_tstar.pdf"))
 plot(beta.dist[,4],beta.dist[,5],pch=16,cex=0.2,col="black",
      xlab="t* estimates [Years after 2011]",
      ylab="c* estimate [mm/a]", main=" ")

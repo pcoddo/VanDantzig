@@ -492,7 +492,7 @@ write.table(unif.dist,file="./Output/array_uniform.txt", quote=FALSE, col.names=
 
 
 # zoom into the joint distribution of t.star and c.star 
-figure(pdf(file="Figures_uniform/c*vst*.pdf"))
+figure(pdf(file="Figures_uniform/cstar_tstar.pdf"))
 plot(unif.dist[,4],unif.dist[,5],pch=16,cex=0.2,col="black",
      xlab="t* estimates [Years after 2011]",
      ylab="c* estimate [mm/a]", main=" ")
