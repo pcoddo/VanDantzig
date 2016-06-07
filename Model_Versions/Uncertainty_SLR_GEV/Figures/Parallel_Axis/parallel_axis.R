@@ -1,16 +1,29 @@
 #load package for parallel coordinate plot
 library(MASS)
+library(fields)
+library(sfsmisc)
 
 load(file = "../../../../../vanDantzig_largefiles/Model_Versions/Uncertainty_SLR_GEV/SLR_GEV.RData")
-#read data 
-M=Objectives
 
+#read data 
+M = Objectives
+min.vals <- sapply(1:ncol(M), function(x) 
+  {
+  signif(min(M[,x]), digits = 3)
+  })
+
+max.vals <- sapply(1:ncol(M), function(x) 
+  {
+  signif(max(M[,x]), digits = 3)
+  })
+
+min.vals <- signif(min.vals, digits = 3)
 # define "brushing" thresholds
 # useful to focus on a few solutions instead of all at once
 # thresholds row format: column number, threshold value, less than (-1) or greater than (1)
 # not all columns need to have thresholds applied
 
-thresholds <- matrix(c(2,0.2,1, 4,0.5,-1), nrow = 2, ncol = 3, byrow = TRUE)
+thresholds <- matrix(c(4, (1/100),-1), nrow = 1, ncol = 3, byrow = TRUE)
 
 #determine solutions to be brushed
 IX <- seq(1,dim(M)[1])
@@ -41,8 +54,6 @@ for (i in 1:ncols){
 }
 
 # brush_on_idx now contains the indices of the rows of M that satisfy:
-# Column 2 greater than 0.2 (scaled value)
-# Column 4 less than 0.5 (scaled value)
 # brush_off_idx contains the remaining indices that do not satisfy these.
 
 
@@ -66,31 +77,46 @@ all_solutions =rbind(M[brush_off_idx, ],M[brush_on_idx, ])
 colnames(all_solutions) <- c("Total Costs", "Costs", "Expected Damages", "Flood Probability")
 
 # Set layout to include a colorbar next to plot.
-layout(matrix(data=c(1,2), nrow=1, ncol=2), widths=c(4,1),
-       heights=c(1,1))
-#plotting margins.  
-
+# Parallel coord function:
+parcoord2 <- function (x, col = 1, lty = 1, var.label = FALSE, ...) 
+{
+  rx <- apply(x, 2L, range, na.rm = TRUE)
+  x <- apply(x, 2L, function(x) (x - min(x, na.rm = TRUE))/(max(x, 
+                                                                na.rm = TRUE) - min(x, na.rm = TRUE)))
+  
+  matplot(1L:ncol(x), t(x), type = "l", col = col2rgb(col, alpha = T), lty = lty, 
+          xlab = "", ylab = "", axes = FALSE, ...)
+  axis(1, at = 1L:ncol(x), labels = colnames(x), lty = 0)
+  axis(1, at = 1L:ncol(x), labels = pretty10exp(min.vals), lty = 0, line = -1, cex.axis = 0.65, col.axis = "dark gray")
+  axis(3, at = 1L:ncol(x), labels = pretty10exp(max.vals), lty = 0, line = -1, cex.axis = 0.65, col.axis = "dark gray")
+  
+  abline(v=1:ncol(x), lty=1, lwd=1.5)
+  for (i in 1L:ncol(x)) {
+    lines(c(i, i), c(0, 1), col = "black")
+    if (var.label) 
+      text(c(i, i), c(0, 1), labels = format(rx[, i], digits = 3), 
+           xpd = NA, offset = 0.3, pos = c(1, 3), cex = 0.7)
+  }
+  invisible()
+}
 
 #plot solutions
-png("parallel_axis.png", width = 6.5, height = 4.5, unit = 'in', res  = 300)
-layout(mat = matrix(c(1,2), 1, 2), widths = c(6, 0.85))
-par(mar = c(5,2,1,1), oma = c(0,0,0,0)+0.5, font = 1.5)
-parcoord(all_solutions, 
+png("parallel_axis.base.png", width = 6.5, height = 4.5, unit = 'in', res  = 300)
+par(mar = c(9,2,1,2), oma = c(0,0,0,0)+0.5, font = 1)
+parcoord2(all_solutions, 
          col=c(rep.int("grey",length(brush_off_idx)),ColorRamp[color_scl]), 
          var.label=FALSE,
          xaxt = "n")
+arrows(x0=0.9, y0=0.95, y1=0.05, length=0.1)
+mtext("Preference", side = 2, line = 1, cex = par("cex.lab"))
 
-mtext("Scaled Values", side = 2, line = 1, cex = par("cex.lab"))
-# Add a colorbar
-#par(mar = c(5,3,2.5,3))
-#par(mar = c(5.5,0,4.5,3))
-par(mar = c(5.5,1,1.5,2))
-
-image(1, ColorLevels,
-      matrix(data=ColorLevels, ncol=length(ColorRamp),nrow=1),
-      col=ColorRamp,xlab="",ylab="Column 1 Value",xaxt="n", las = 1, axes = F)
-axis(side = 4, at = c(0,1), labels = TRUE, las = 1)
-mtext("Column 1 Value", side = 4, line = 0.5, cex.lab = 0.5)
+# Add colorbar
+image.plot(1, ColorLevels, add = T, legend.line = 7.5, 
+      matrix(data=ColorLevels, ncol=length(ColorRamp),nrow=1), legend.only = T, 
+      col=ColorRamp,xlab="",ylab="Column 1 Value",xaxt="n", las = 1, axes = F, horizontal = T,
+      legend.shrink = 0.75, legend.width = 0.85, 
+      axis.args = list(at = c(0,1), labels = c(0,100), tick = F, line = -1),
+      legend.args = list(side = 1, line = 1.05, text = "Flood Probability (%)", cex = 0.85))
 
 dev.off()
 ### End of Plotting
