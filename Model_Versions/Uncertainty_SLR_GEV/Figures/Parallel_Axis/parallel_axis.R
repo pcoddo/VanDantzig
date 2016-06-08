@@ -58,12 +58,15 @@ for (i in 1:ncols){
 
 
 #make color_map.  This one scales based on column 1 values
-col_to_plot <- M[brush_on_idx,1]
+col_to_plot <- M[brush_on_idx,4]
 
 ColorRamp <- c(colorRampPalette(c("blue", "light blue"))(50),
                colorRampPalette(c("light blue", "light green", "yellow"))(55),
-               colorRampPalette(c("orange", "red", "darkred"))(70))
-#ColorLevels <- seq(min(col_to_plot), max(col_to_plot), length=length(ColorRamp))
+               colorRampPalette(c("yellow", "orange", "red", "darkred"))(70))
+
+ColorRampAlpha <- apply(sapply(ColorRamp, col2rgb)/255, 2, 
+                        function(x) rgb(x[1], x[2], x[3], alpha=0.1))
+
 ColorLevels <- seq(min(col_to_plot), 1, length=length(ColorRamp))
 
 z_scl <- (col_to_plot - min(col_to_plot, na.rm=T))/
@@ -84,11 +87,11 @@ parcoord2 <- function (x, col = 1, lty = 1, var.label = FALSE, ...)
   x <- apply(x, 2L, function(x) (x - min(x, na.rm = TRUE))/(max(x, 
                                                                 na.rm = TRUE) - min(x, na.rm = TRUE)))
   
-  matplot(1L:ncol(x), t(x), type = "l", col = col2rgb(col, alpha = T), lty = lty, 
+  matplot(1L:ncol(x), t(x), type = "l", col = col, lty = lty, lwd = 0.65, 
           xlab = "", ylab = "", axes = FALSE, ...)
   axis(1, at = 1L:ncol(x), labels = colnames(x), lty = 0)
-  axis(1, at = 1L:ncol(x), labels = pretty10exp(min.vals), lty = 0, line = -1, cex.axis = 0.65, col.axis = "dark gray")
-  axis(3, at = 1L:ncol(x), labels = pretty10exp(max.vals), lty = 0, line = -1, cex.axis = 0.65, col.axis = "dark gray")
+  axis(1, at = 1L:ncol(x), labels = pretty10exp(min.vals), lty = 0, line = -1, cex.axis = 0.65, col.axis = "gray48")
+  axis(3, at = 1L:ncol(x), labels = pretty10exp(max.vals), lty = 0, line = -1, cex.axis = 0.65, col.axis = "gray48")
   
   abline(v=1:ncol(x), lty=1, lwd=1.5)
   for (i in 1L:ncol(x)) {
@@ -101,22 +104,22 @@ parcoord2 <- function (x, col = 1, lty = 1, var.label = FALSE, ...)
 }
 
 #plot solutions
-png("parallel_axis.base.png", width = 6.5, height = 4.5, unit = 'in', res  = 300)
-par(mar = c(9,2,1,2), oma = c(0,0,0,0)+0.5, font = 1)
+png("parallel_axis.brush.png", width = 6.5, height = 4.5, unit = 'in', res  = 300)
+par(mar = c(8,2,1,2), oma = c(0,0.5,1,0.5), font = 1)
 parcoord2(all_solutions, 
-         col=c(rep.int("grey",length(brush_off_idx)),ColorRamp[color_scl]), 
+         col=c(rep.int("grey",length(brush_off_idx)),ColorRampAlpha[color_scl]), 
          var.label=FALSE,
          xaxt = "n")
-arrows(x0=0.9, y0=0.95, y1=0.05, length=0.1)
+arrows(x0=0.91, y0=0.95, y1=0.05, length=0.1, lwd = 2)
 mtext("Preference", side = 2, line = 1, cex = par("cex.lab"))
 
 # Add colorbar
-image.plot(1, ColorLevels, add = T, legend.line = 7.5, 
+image.plot(1, ColorLevels, add = T, legend.line = 6, smallplot =  c(0.15,0.85,0.06,0.1),
       matrix(data=ColorLevels, ncol=length(ColorRamp),nrow=1), legend.only = T, 
       col=ColorRamp,xlab="",ylab="Column 1 Value",xaxt="n", las = 1, axes = F, horizontal = T,
       legend.shrink = 0.75, legend.width = 0.85, 
-      axis.args = list(at = c(0,1), labels = c(0,100), tick = F, line = -1),
-      legend.args = list(side = 1, line = 1.05, text = "Flood Probability (%)", cex = 0.85))
+      axis.args = list(at = c(0,1), labels = c(pretty10exp(min.vals)[4], pretty10exp(1e-02)), tick = F, line = -0.85, cex.axis = 0.85),
+      legend.args = list(side = 3, line = 0.35, text = "Flood Probability for brushed set (1/yr)", cex = 0.85))
 
 dev.off()
 ### End of Plotting
