@@ -14,35 +14,35 @@ plot.parallel <- function(obj, comp, labels=colnames(obj), col.line=rep(par("fg"
     par(mar=c(6,3.5,4,2.5)+0.1)
     plot.window(xlim=c(1,n.objs), ylim=c(0,1), yaxs="i")
     axis(1, at=1:n.objs, labels=F, line=2, lwd = 2)
-    mtext(1, at=1:n.objs, text=labels, col=col.text[1:n.objs], line=2, font=2, padj = 1)
-    arrows(x0=0.9, y0=0.95, y1=0.05, length=0.2, lwd = 3)
-    mtext("Preference", 2)
+    mtext(1, at=1:n.objs, text=labels, col=col.text[1:n.objs], line=2, font=1, padj = 1)
+    arrows(x0=0.9, y0=0.95, y1=0.05, length=0.1, lwd = 2)
+    mtext("Preference", 2, font = 2)
     par(xpd=F)
-    abline(v=1:n.objs, lty=1, lwd=3)
+    invisible(sapply(1:nrow(comp), function(this.item) lines(comp[this.item,], col="light gray", lty = 1, lwd = 0.75)))
+    #invisible(sapply(1:nrow(comp), function(this.item) lines(comp[this.item,], col=rgb(128/255, 128/255, 128/255, alpha = 0.25), lty = 1, lwd = 0.5)))
+    abline(v=1:n.objs, lty=1, lwd=2)
     par(xpd=T)
-    #invisible(sapply(1:nrow(comp), function(this.item) lines(comp[this.item,], col=rgb(128/255, 128/255, 128/255, alpha = 0.35), lty = 1, ...)))
+    lines(1:n.objs, rep(0, n.objs), col=par("fg"), lty=3, lwd=3)
     for(i in 1:nrow(obj.mat.new)){
       if(obj.mat.new[i,5]==1){
         lines(obj[i,], col = col.line[i], ...)
-        points(obj[i,], bg = col.line[i], col = "black", pch = 22, cex = 1.25, lwd = 3)
+        points(obj[i,], bg = col.line[i], col = "black", pch = 22, cex = 1.25, lwd = 2)
         #invisible(sapply(1:nrow(obj), function(this.item) lines(obj[this.item,], col=col.line[this.item], ...)))
       } else {
         lines(obj[i,], col = col.line[i], lty = 2, ...)
-        points(obj[i,], bg = col.line[i], col = "black", pch = 21, cex = 1.25, lwd = 3)
+        points(obj[i,], bg = col.line[i], col = "black", pch = 21, cex = 1.25, lwd = 2)
         #invisible(sapply(1:nrow(obj), function(this.item) lines(obj[this.item,], col=c("red", "black"), lty = 2)))
       }
     }
     #invisible(sapply(1:nrow(obj), function(this.item) lines(obj[this.item,], col=col.line[this.item], ...)))
     #invisible(sapply(1:nrow(obj), function(this.item) points(obj[this.item,], col = rep("black", nrow(obj)), bg = col.line[this.item],pch = 22, lwd = 3, cex = 1.25)))
     par(xpd=F)
-    axis(1, at = 1L:ncol(obj), labels = pretty10exp(signif(obj.range[1,]), digits = 3), lty = 0, line = -0.85, cex.axis = 1, col.axis = "black")
-    axis(3, at = 1L:ncol(obj), labels = pretty10exp(signif(obj.range[2,]), digits = 3), lty = 0, line = -0.85, cex.axis = 1, col.axis = "black")
+    axis(1, at = 1L:ncol(obj), labels = pretty10exp(signif(obj.range[1,]), digits = 3), lty = 0, line = -0.75, cex.axis = 1, col.axis = "black")
+    axis(3, at = 1L:ncol(obj), labels = pretty10exp(signif(obj.range[2,]), digits = 3), lty = 0, line = -0.75, cex.axis = 1, col.axis = "black")
     
     #axis(1, at = 1L:ncol(obj), labels = pretty10exp(min.vals), lty = 0, line = -0.85, cex.axis = 1, col.axis = "black")
     #axis(3, at = 1L:ncol(obj), labels = pretty10exp(max.vals), lty = 0, line = -0.85, cex.axis = 1, col.axis = "black")
-    
-    lines(1:n.objs, rep(0, n.objs), col=par("fg"), lty=3, lwd=2)
-    
+  
   }
   
   invisible(list(obj.norm = obj))
@@ -99,8 +99,8 @@ flood.index = which.min(Objectives$EV_p_exceed_transient.v)
 ### Combine optimal and compromise solutions into matrix for plotting
 # In 5th column, 1 denotes optimal while -1 denotes compromise
 
-obj.cols = c("dark blue", "skyblue3", "green", "darkorchid4", "indianred", "orange")
-obj.cols = c("darkorchid4", "indianred", "green", "dodgerblue", "yellow2", "orange")
+#obj.cols = c("dark blue", "skyblue3", "green", "darkorchid4", "indianred", "orange")
+obj.cols = c("darkorchid", "indianred", "green", "dodgerblue", "sky blue", "orange")
 #obj.cols = c(rainbow(6)[5], rainbow(6)[6], rainbow(6)[1], rainbow(6)[2], rainbow(6)[4], rainbow(6)[3])
 obj.mat = matrix(data = c(as.numeric(Objectives[total_costs.index,]), 1,
             as.numeric(Objectives[cost.index,]), 1,
@@ -108,12 +108,11 @@ obj.mat = matrix(data = c(as.numeric(Objectives[total_costs.index,]), 1,
             as.numeric(Objectives[flood.index,]), 1,
             as.numeric(comp5), -1, 
             as.numeric(comp4), -1 ),nrow = 6, ncol = 5, byrow = T)
-            #as.numeric(Objectives[comp3,]), -1), nrow = 6, ncol = 5, byrow = T)
-#comp.mat = matrix(data = c(as.numeric(Objectives[comp1,]),
-#                  as.numeric(Objectives[comp2,])), nrow = 2, ncol = 4, byrow = T)
-comp.mat = as.matrix(Objectives[sample(1:nrow(Objectives), 300, replace = F),], nrow = 300, ncol = 4, byrow = T)
+comp.mat = as.matrix(Objectives[sample(1:nrow(Objectives), 200, replace = F),], nrow = 200, ncol = 4, byrow = T)
+
 ### Plot
+pdf("parallel_axis_2.pdf", width = 6.5, height = 4.25)
 plot.parallel(obj.mat, comp = comp.mat, labels = c("Total Costs", "Investment \nCosts", "Expected \nDamages", "Flood \nProbability"),
               col.line = obj.cols,
-              col.text = obj.cols, lwd = 3, type = 'l', pch = 22, cex = 1.25, bg = obj.cols)
-  
+              col.text = obj.cols, lwd = 2, type = 'l', pch = 22, cex = 1.25, bg = obj.cols)
+dev.off() 
