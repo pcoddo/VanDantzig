@@ -33,7 +33,7 @@ source('../Scripts/upper.diag.R')
 n_params = 11
 
 # Set Sobol indices file name 
-Sobol_file = "sobolIndices_reliability.txt"
+Sobol_file = "sobolIndices_damages.txt"
 
 #################################### 
 # Import data from sensitivity analysis
@@ -134,7 +134,7 @@ plotRadCon(df=s1st1
            ,s2=s2
            ,scaling = 1
            ,s2_sig=s2_sig1
-           ,filename = 'Figures/reliability2' 
+           ,filename = 'Figures/damages2' 
            ,plotType = 'EPS'
            ,legLoc = "bottomcenter",cex = 1.5
             )

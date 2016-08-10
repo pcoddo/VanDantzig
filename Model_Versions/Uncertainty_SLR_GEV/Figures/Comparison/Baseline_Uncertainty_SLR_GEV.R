@@ -22,7 +22,7 @@ library(extrafont)
 load("../../../Parametric_Uncertainty/Parametric_Uncertainty.RData")
 
 # (A) Baseline plot
-png("Baseline_Uncertainty_SLR_GEV2.png", width = 9, height = 5.5, unit = "in", res = 600)
+png("fig3.png", width = 9, height = 5.5, unit = "in", res = 600)
 #pdf("Baseline_Uncertainty_SLR_GEV2.pdf", width = 9.5, height = 5.5)
 par(mfrow = c(2,2), mar = c(0, 1, 2, 0.75)+0.1, oma = c(3.5, 3, 0, 0.5)+0.1)
 
@@ -45,17 +45,17 @@ legend("topright",
        lty = c(1, 1, 1, NA),
        pch = c(NA, NA, NA, 20),
        lwd = 3,
-       c("Expected Losses", "Investment Costs", "Expected Total Costs", "Minimum Total Costs"),
+       c("Discounted damages", "Investment costs", "Discounted total costs", "Minimum NPV total costs"),
        col = c(myred, myblue, "black", "black"),
        cex = 1,
        bg = "white")
 box(lwd = 1.3)
-mtext("(A) van Dantzig (1956) simple model structure", side = 3, line = 0.15, at = 0, adj = c(0,0), cex = 0.9)
+mtext("(A) van Dantzig (1956) baseline model structure", side = 3, line = 0.15, at = 0, adj = c(0,0), cex = 0.9)
 text(min_cost_X, 200, labels = min_cost_X)
 
 # (B) Parametric Uncertainty plot
 # Load environment from van Dantzig analysis with parametric uncertainty
-load("../../../Parametric_Uncertainty/Parametric_Uncertainty.RData")
+#load("../../../Parametric_Uncertainty/Parametric_Uncertainty.RData")
 
 matplot(X, (NPV_expected_losses/1e+06), type = 'l', col = myredalpha05,
      xlab = expression(bold("Dike height increase [m]")), 
@@ -132,6 +132,6 @@ axis(side = 1, tck = -.045, labels = NA, lwd = 1.5)
 axis(side = 2, tck = -.045, labels = NA, lwd = 1.5)
 mtext("Dike height increase [m]", side = 1, line = 2.5, cex = 0.9)
 mtext("(D) Updated storm surge model", side = 3, line = 0.15, at = 0, adj = c(0,0), cex = 0.9)
-text(min_cost_X_mean, 275, labels = min_cost_X_mean)
+text(min_cost_X_mean, 300, labels = min_cost_X_mean)
 
 dev.off()

@@ -170,41 +170,40 @@ min_cost_de_minimis_X = X[de_minimis_risk_ind]
 # Compare with optimal height found in paper (H_0 + 2.48m = 6.73m)
 source("Scripts/mycolors.R")
   
-pdf("Figures/optimal_dike_height.pdf", width = 6, height = 4.5)
+pdf("Figures/FigureS1.pdf", width = 6, height = 4.5)
 par(mar = c(4,4,1,1)+0.1, oma = c(0,0,0,0)+0.1)
 
 plot(X, NPV_expected_losses, type = 'l', 
      col = myred, 
      lwd = 3, 
      ylim = c(0,7e+08),
-     xlab = expression(bold("Dike height increase [m]")), 
-     ylab = expression(bold('Expected cost [Guilders]'))
+     xlab = "Dike height increase [m]", 
+     ylab = "Expected cost [Guilders]"
 )
 abline(v = 2.48, col = "gray", lwd = 3)
 lines(X, costs, col = myblue, lwd = 3)
-lines(X, total_costs, col = 'black', lwd = 4, lty = 2)
+lines(X, total_costs, col = 'black', lwd = 4)
 points(min_cost_X, total_costs[min_ind], pch = 20, cex = 2)
-points(min_cost_de_minimis_X, total_costs[de_minimis_risk_ind], pch = 18, cex = 2, col = "orange")
+#points(min_cost_de_minimis_X, total_costs[de_minimis_risk_ind], pch = 18, cex = 2, col = "orange")
 
 text(min_cost_X, 
      total_costs[min_ind]*1.25,
      labels = min_cost_X)
 
-text(min_cost_de_minimis_X, 
-     total_costs[de_minimis_risk_ind]*1.15,
-     labels = min_cost_de_minimis_X)
+# text(min_cost_de_minimis_X, 
+#      total_costs[de_minimis_risk_ind]*1.15,
+#      labels = min_cost_de_minimis_X)
 
 legend("topright", 
-       c("Expected Losses", 
-         "Investment Costs", 
-         "Total Costs", 
-         "Minimum Cost", 
-         "Minimum Risk", 
+       c("Expected damages", 
+         "Investment costs", 
+         "Total costs", 
+         "Minimum NPV of total costs", 
          "van Dantzig [1956] optimal"),
-       lty = c(1, 1, 2, NA, NA, 1),
-       lwd = c(3, 3, 3, NA, NA, 3),
-       pch = c(NA, NA, NA, 20, 18, NA),
-       col = c(myred, myblue, "black", "black", "orange", "gray"),
+       lty = c(1, 1, 1, NA, 1),
+       lwd = c(3, 3, 3, NA, 3),
+       pch = c(NA, NA, NA, 20, NA),
+       col = c(myred, myblue, "black", "black", "gray"),
        pt.cex = 1.25,
        bty = 'n',
        inset = c(0.01, 0.01)
