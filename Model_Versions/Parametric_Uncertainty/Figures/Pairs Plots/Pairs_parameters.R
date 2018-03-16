@@ -11,7 +11,7 @@
 #################################### 
 
 # Set working directory
-#setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Parametric_Uncertainty/Figures/Pairs Plots")
+#setwd("~/vanDantzig/Model_Versions/Parametric_Uncertainty/Figures/Pairs Plots")
 
 # Pairs plot for parameters
 source("../../Scripts/plotutils.R")

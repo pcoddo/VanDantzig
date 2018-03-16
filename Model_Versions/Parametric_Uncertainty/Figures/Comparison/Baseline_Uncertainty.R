@@ -10,7 +10,7 @@
 #################################### 
 
 # Set working directory:
-setwd("~/Documents/Grad/SCRiM/vanDantzig/Model Versions/Parametric Uncertainty/Figures/Comparison")
+setwd("~/vanDantzig/Model_Versions/Parametric_Uncertainty/Figures/Comparison")
 
 # Load environment from van Dantzig analysis with parametric uncertainty
 load("../../Parametric_Uncertainty.RData")

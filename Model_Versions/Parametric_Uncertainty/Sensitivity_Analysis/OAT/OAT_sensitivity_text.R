@@ -10,7 +10,7 @@
 #################################### 
 
 # Set working directory
-setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Parametric_Uncertainty/Sensitivity_Analysis/OAT")
+setwd("~/vanDantzig/Model_Versions/Parametric_Uncertainty/Sensitivity_Analysis/OAT")
 
 # Compile
 rm(list = ls())
