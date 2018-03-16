@@ -37,3 +37,10 @@ Our analysis is evaluates the effects of increasing parametric and structural mo
 * The `Parameteric_Uncertainty` version uses the same structure as the baseline, but introduces uncertainty in the parameter values.
 * The `Uncertainty_SLR` version introduces uncertainty in the model structure but implementing an updated sea-level rise model.
 * The `Uncertainty_SLR_GEV` version introduces storm surge projections generated using a generalized extreme value (GEV) analysis.
+
+### R Packages ###
+* zoo
+* lubridate
+* lhs
+* extrafont
+* fExtremes
