@@ -26,7 +26,7 @@
 ############################################
 
 # Set working directory
-setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/SLR_Module")
+setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR/SLR_Module")
 
 # Compile
 rm(list = ls())
@@ -477,7 +477,7 @@ dev.off()   #write file
 
 
 # Nathan's resources for marginals and pair plots
-source("Rejection Sampling/plotutils.R")
+source("Rejection_Sampling/plotutils.R")
 
 figure(pdf(file="Figures/marginals.pdf"))
 plot.marginals(beta.dist) 

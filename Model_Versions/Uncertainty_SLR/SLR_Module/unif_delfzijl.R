@@ -26,7 +26,7 @@
 ############################################
 
 # Set working directory
-setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/SLR_Module")
+setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR/SLR_Module")
 
 # Compile
 rm(list = ls())

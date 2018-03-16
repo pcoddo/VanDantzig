@@ -16,7 +16,7 @@
 #################################### 
 
 # Set working directory
-# setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR/Sensitivity_Analysis/Sobol/SALib/Output")
+# setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR/Sensitivity_Analysis/Sobol/SALib/Output")
 
 # Libraries----
 library(RColorBrewer) # good color palettes

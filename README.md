@@ -44,3 +44,4 @@ Our analysis is evaluates the effects of increasing parametric and structural mo
 * lhs
 * extrafont
 * fExtremes
+* timeSeries
