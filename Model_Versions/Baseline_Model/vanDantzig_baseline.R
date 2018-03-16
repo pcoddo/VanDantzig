@@ -23,7 +23,7 @@
 ###################################################
 
 # Set working directory
-setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Baseline_Model")
+setwd("~/vanDantzig/Model_Versions/Baseline_Model")
 
 # Clear environment and figures
 rm(list = ls())
