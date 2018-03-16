@@ -11,7 +11,7 @@
 #################################### 
 
 # Set working directory
-setwd("~/GitHub/vanDantzig/Model_Versions/Parametric_Uncertainty/Sensitivity_Analysis/Sobol/SALib")
+setwd("~/vanDantzig/Model_Versions/Parametric_Uncertainty/Sensitivity_Analysis/Sobol/SALib")
 
 # Compile
 rm(list = ls())
