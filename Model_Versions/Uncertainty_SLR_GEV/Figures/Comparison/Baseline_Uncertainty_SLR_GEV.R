@@ -12,7 +12,7 @@
 #################################### 
 
 # Set working directory:
-#setwd("~/path_to/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Comparison")
+#setwd("~vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Comparison")
 
 source("../../Scripts/put_fig_letter.r")
 source("../../Scripts/mycolors.R")
@@ -55,7 +55,7 @@ text(min_cost_X, 200, labels = min_cost_X)
 
 # (B) Parametric Uncertainty plot
 # Load environment from van Dantzig analysis with parametric uncertainty
-#load("../../../Parametric_Uncertainty/Parametric_Uncertainty.RData")
+load("../../../Parametric_Uncertainty/Parametric_Uncertainty.RData")
 
 matplot(X, (NPV_expected_losses/1e+06), type = 'l', col = myredalpha05,
      xlab = expression(bold("Dike height increase [m]")), 

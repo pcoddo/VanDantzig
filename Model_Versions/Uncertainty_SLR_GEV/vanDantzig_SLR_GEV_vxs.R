@@ -19,7 +19,7 @@
 ###################################
 
 # Set working directory
-#setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV")
+#setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR_GEV")
 
 # Compile
 rm(list = ls())
@@ -182,5 +182,5 @@ Objectives <- data.frame(total_costs.v, costs.v, NPV_expected_losses.v, EV_p_exc
 source("Scripts/Mean_curves.R")
 
 # Save global environment
-save.image(file = "SLR_GEV2.RData")
+save.image(file = "SLR_GEV.RData")
 
