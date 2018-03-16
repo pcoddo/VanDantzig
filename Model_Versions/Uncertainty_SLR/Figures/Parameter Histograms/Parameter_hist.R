@@ -9,7 +9,7 @@
 #################################### 
 
 # Set working directory
-setwd("~/Documents/Grad/SCRiM/van Dantzig/Model Versions/Parametric Uncertainty/Figures/Parameter Histograms")
+setwd("~/vanDantzig/Model_Versions/Parametric_Uncertainty/Figures/Parameter Histograms")
 
 source("mycolors.R")
 pdf("Parameter_hist.pdf", width = 8, height = 6)
