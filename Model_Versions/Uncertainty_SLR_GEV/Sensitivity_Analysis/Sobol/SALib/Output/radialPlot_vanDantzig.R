@@ -16,7 +16,7 @@
 #################################### 
 
 # Set working directory
-# setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/Sobol/SALib/Output")
+# setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/Sobol/SALib/Output")
 
 # Libraries----
 library(RColorBrewer) # good color palettes
@@ -141,3 +141,5 @@ plotRadCon(df=s1st1
             )
 
 #dev.off()
+
+### Plot for each objective and assemble in Powerpoint or Photoshop
