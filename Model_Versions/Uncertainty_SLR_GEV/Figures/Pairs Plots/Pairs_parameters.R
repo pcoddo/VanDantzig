@@ -11,7 +11,7 @@
 #################################### 
 
 # Set working directory
-setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Pairs Plots/")
+setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Pairs Plots/")
 
 # Pairs plot for parameters
 #source("../../SLR_Module/Rejection_Sampling/plotutils.R")
@@ -123,7 +123,7 @@ plot.pairs(Parameters[3:5], labels = c("V", expression(delta*"'"), "k"))
 dev.off()
 
 # Plot sea-level rise parameters
-pdf("SLR_param2.pdf")
+pdf("SLR_param2.pdf") #Figure S4
 plot.pairs(c(Parameters[6], beta.dist[1:5]), labels = c(expression(eta), "a", "b", "c", "t*", "c*"))
 dev.off()
 
@@ -132,7 +132,5 @@ pdf("GEV_param2.pdf")
 plot.pairs(GEV_param, labels = c(expression(mu), expression(xi), expression(sigma)))
 dev.off()
 
-
-View(plot.pairs)
 
 
