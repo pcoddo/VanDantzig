@@ -47,3 +47,8 @@ Our analysis is evaluates the effects of increasing parametric and structural mo
 * extRemes
 * timeSeries
 * compiler
+* fields
+* KernSmooth
+* RColorBrewer
+* MASS
+* sfsmisc
