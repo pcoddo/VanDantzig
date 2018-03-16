@@ -10,7 +10,7 @@
 #################################### 
 
 # Set working directory 
-#setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module")
+#setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module")
 
 # Load required libraries
 library(zoo)
@@ -44,9 +44,8 @@ for(i in 1:length(annual$index.year.max.)){
 }
 
 
-png(file = "Figures/sl_means_pres.png", width = 10, height = 3, units = "in", res = 600)
-#pdf(file = "Figures/sl_means1.pdf", width = 6, height = 8)
-png(file = "Figures/sl_means1.png", width = 6, height = 8, units = "in", res = 300)
+# Figure S6
+png(file = "Figures/figs6.png", width = 6, height = 8, units = "in", res = 300)
 par(mfcol = c(2,1), oma = c(3,0,0,0)+0.1, mar = c(1,4,1,0)+0.25)
 plot(data$date.time, data$sl, type = 'l', lwd = 1, xaxs = 'i', 
      col = myblue, ylab = "Sea Level [cm]", 
@@ -100,7 +99,7 @@ dev.off()
 ###################################
 ### Block maxima of annual residual plots
 # Histogram
-pdf(file = "Figures/sea_level_hist.pdf", width = 6, height = 4)
+pdf(file = "Figures/DiagnosticPlots/sea_level_hist.pdf", width = 6, height = 4)
 par(oma = c(0,0,0,0)+0.1, mar = c(4,4,1,1)+0.1)
 hist(year.res.max, breaks = 10, prob = T, col = mybluealpha1, border = "black",
      main = NULL,
@@ -115,7 +114,7 @@ dev.off()
 
 ###################################
 ### GEV distribution (annual block maxima)
-pdf("Figures/GEV_fit.pdf", width = 6, height = 4)
+pdf("Figures/DiagnosticPlots/GEV_fit.pdf", width = 6, height = 4)
 par(oma = c(0,0,0,0)+0.1, mar = c(4,4,1,1)+0.1)
 plot(density(coredata(year.res.max)), lwd = 1.5, main = NA)
 lines(density(qgev(seq(0,1, length.out = 10^4), year.res.max.fit2@fit$par.ests[1], year.res.max.fit2@fit$par.ests[2], year.res.max.fit2@fit$par.ests[3])), 
@@ -131,7 +130,7 @@ dev.off()
 
 ###################################
 ### Block Maxima plots
-pdf("Figures/GEV_block_maxima.pdf", width = 6, height = 4)
+pdf("Figures/DiagnosticPlots/GEV_block_maxima.pdf", width = 6, height = 4)
 par(oma = c(0,0,0,0)+0.1, mar = c(4,4,1,1)+0.1)
 plot(index(year.res.max), coredata(year.res.max), type = 'h', col = myblue, xaxs = 'i',
      ylab = "Maximum sea level (cm)", xlab = "Year")
@@ -142,7 +141,7 @@ dev.off()
 ### Return level plots
 source("Scripts/return_level_plot.R")
 
-pdf(file = "Figures/return_level_year.max.pdf", width = 6, height = 4)
+pdf(file = "Figures/DiagnosticPlots/return_level_year.max.pdf", width = 6, height = 4)
 par(oma = c(0,0,0,0)+0.1, mar = c(4,4,1,1)+0.1)
 return_level_plot(coredata(year.res.max), 10^6, legend = T)
 dev.off()
@@ -161,7 +160,7 @@ q = seq(0,1, length.out = 10^6)
 year.res.data <- plot.sf(coredata(year.res.max), make.plot = F)
 year.res.line <- lm(log10(year.res.data)~coredata(year.res.max))
 
-pdf(file = "Figures/GEV_survival.pdf", width = 6, height = 4)
+pdf(file = "Figures/DiagnosticPlots/GEV_survival.pdf", width = 6, height = 4)
 par(oma = c(0,0,0,0)+0.1, mar = c(4,4,1,1))
 plot.sf(coredata(year.res.max), pch = 20,
         ylab = "Probability",
@@ -230,7 +229,7 @@ quant[8,4] <- coef(summary(quantreg99))[2,2]
 
 colnames(quant) <- c("percent", "quantile", "slope", "error")
 
-pdf("Figures/quant_reg_raw.pdf", width = 6, height = 4)
+pdf("Figures/DiagnosticPlots/quant_reg_raw.pdf", width = 6, height = 4)
 par(oma = c(0,1,0,0)+0.1, mar = c(4,4,1,1))
 
 plot(quant[,2], quant$slope, type = 'o', pch = NA, lty = 2, xaxt = 'n', ylab = NA, xlab = "Quantile", las = 1)
@@ -245,7 +244,7 @@ dev.off()
 ### MCMC Survival plots 
 
 # Plot MCMC GEV parameters (unconstrained)
-pdf("Figures/Parameter_full.pdf", width = 8, height = 3.75)
+pdf("Figures/DiagnosticPlots/Parameter_full.pdf", width = 8, height = 3.75)
 par(oma = c(0,1,0,0)+0.1, mar = c(4,4,1,1), mfcol = c(1,3))
 
 plot(density(mu.burn2), main = NA, lwd = 1.5)
@@ -283,7 +282,7 @@ box(lwd = 1.5)
 dev.off()
 
 # GEV parameters (constrained)
-pdf("Figures/Parameter_constraints.pdf", width = 8, height = 3.75)
+pdf("Figures/DiagnosticPlots/Parameter_constraints.pdf", width = 8, height = 3.75)
 par(oma = c(0,1,0,0)+0.1, mar = c(4,4,1,1), mfcol = c(1,3))
 
 plot(density(mu.burn3), main = NA, lwd = 1.5)
@@ -571,7 +570,7 @@ dev.off()
 
 
 ####
-# This is for figure S-6, just showing MCMC uncertainty bounds and expected line.
+# This is for figure S2, just showing MCMC uncertainty bounds and expected line.
 # Previously used incorrect parameter subsets.
 pdf(file = "Figures/Fig2.pdf", width = 6.5, height = 4.5)
 par(oma = c(0,0,0,0)+0.1, mar = c(4,4,1,1))
