@@ -18,7 +18,7 @@ library(zoo)
 library(lubridate)
 
 # Set working directory 
-setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module")
+setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module")
 
 # Read in tide gauge data
 tide1 = read.table("Data/3hr.txt", header = TRUE, sep = '\t')

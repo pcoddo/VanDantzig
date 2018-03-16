@@ -19,7 +19,7 @@
 ###################################
 
 # Set working directory
-#setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV")
+#setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR_GEV")
 
 # Compile
 rm(list = ls())
@@ -112,24 +112,26 @@ subsidence              = array(NA, dim = c(length(time), n_obs))
     
     # The effective dike height is the current height minus the 
     # combined effects of subsidence and sea-level rise
+    print('Calculating effective heights...')
     effective_height[,,] = t(sapply(1:length(X), function(i) {
       t(sapply(1:length(time), function(j) {
         X[i] - subsidence[j,] - sea_level_rise[j,]    }))   }))
-    
     # Annual flood frequency using old observations and new effective heights 
     # (assumes stationary flooding frequency)
     
-    # Find expected values of effective heights for each year in time horizon
-    effective_means <- array(NA, dim = c(length(X), length(time)))
-    effective_means <- t(sapply(1:length(X), function(i) {
-      t(sapply(1:length(time), function(j) {
-        mean(effective_height[i,j,]) + H_0    }))     }))
-    
-    for(j in 1:length(time))
-    {  
-      p_exceed_transient[,j,] = t(sapply(1:length(X), function(i){
-        1 - exceedance_prob(effective_means[i,j])   }))
-    }
+    # calculate exceedance probabilites for each SOW, height, and time
+    print('Calculating exceedance probabilities...')
+    p_exceed_transient <- sapply(1:n_obs,function(k) {
+      sapply(1:length(time), function(j) {
+        1-pevd(effective_height[,j,k]*100,scale=GEV_param$sigma[k],shape=GEV_param$xi[k],loc=GEV_param$mu[k])
+        })
+      },simplify='array')
+
+#     for(j in 1:length(time))
+#     {  
+#       p_exceed_transient[,j,] = t(sapply(1:length(X), function(i){
+#         1 - exceedance_prob(effective_height[i,j,k])   }))
+#     }
     
       p_exceed_transient[which(p_exceed_transient < 1e-09)] <- 1e-09
       
@@ -142,7 +144,7 @@ subsidence              = array(NA, dim = c(length(time), n_obs))
     costs = t(sapply(1:length(X), function(i) {
       Parameters$k_p * X[i]   }))
     
-    # The total discounted expected losses are the sum of the discounted expected annual losses
+    # The total discountead expected losses are the sum of the discounted expected annual losses
     NPV_expected_losses = apply(NPV_costs_flooding, c(1,3), sum) 
     
     # Expected value of average annual flood frequency (mean of annual flood frequencies)
@@ -180,4 +182,5 @@ Objectives <- data.frame(total_costs.v, costs.v, NPV_expected_losses.v, EV_p_exc
 source("Scripts/Mean_curves.R")
 
 # Save global environment
-save.image(file = "SLR_GEV2.RData")
+save.image(file = "SLR_GEV.RData")
+
