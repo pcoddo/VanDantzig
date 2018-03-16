@@ -11,7 +11,7 @@
 #################################### 
 
 # Set working directory:
-setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR/Figures/Comparison")
+setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR/Figures/Comparison")
 
 source("../../Scripts/put_fig_letter.r")
 source("../../Scripts/mycolors.R")
@@ -20,8 +20,7 @@ library(extrafont)
 # Baseline vs Uncertainty Figure
 
 # Baseline plot
-#pdf(file = "../Figures/Fig1_Baseline_Uncertainty1.pdf", height = 8, width = 6, family = "Times", pointsize = 12)
-png("Baseline_Uncertainty_SLR2.png", width = 12, height = 8, unit = "in", res = 600)
+png("Baseline_Uncertainty_SLR.png", width = 12, height = 8, unit = "in", res = 600)
 par(mfcol = c(2,2), mar = c(3, 2, 1, 3), oma = c(2, 2, 1, 0), family="Times")
 
 plot(X, (NPV_expected_losses.base/1e+06), type = 'l', col = myred, 
@@ -79,8 +78,9 @@ text(min_cost_X_mean, 200, labels = min_cost_X_mean)#"2.65 m")
 
 # Sea level rise module plot
 # Load environment from van Dantzig analysis with sea level rise module
-#load("../../Uncertainty_SLR.RData")
-load("../../Uncertainty_SLR_uniform.RData")
+load("../../Uncertainty_SLR.RData") #Beta Distribution
+#load("../../Uncertainty_SLR_uniform.RData") #Uniform Distribution
+
 matplot(X, (NPV_expected_losses/1e+06), type = 'l', col = myredalpha05,
         xlab = expression(bold("Dike height increase (m)")), 
         ylab = expression(bold('Expected cost (million Guilders)')),

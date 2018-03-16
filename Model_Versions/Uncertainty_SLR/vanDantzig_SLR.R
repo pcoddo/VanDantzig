@@ -19,7 +19,7 @@
 ###################################
 
 # Set working directory
-#setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR")
+#setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR")
 
 # Compile
 rm(list = ls())
@@ -166,5 +166,5 @@ Objectives <- data.frame(total_costs.v, costs.v, NPV_expected_losses.v, EV_p_exc
 source("Scripts/Mean_curves.R")
 
 # Save global environment
-#save.image(file = "Uncertainty_SLR.RData") # Beta Distribution
-save.image(file = "Uncertainty_SLR_uniform.RData") # Uniform Distribution
+save.image(file = "Uncertainty_SLR.RData") # Beta Distribution
+#save.image(file = "Uncertainty_SLR_uniform.RData") # Uniform Distribution
