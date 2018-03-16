@@ -12,7 +12,7 @@
 #################################### 
 
 # Set working directory:
-setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Comparison")
+#setwd("~/path_to/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Comparison")
 
 source("../../Scripts/put_fig_letter.r")
 source("../../Scripts/mycolors.R")
@@ -22,7 +22,7 @@ library(extrafont)
 load("../../../Parametric_Uncertainty/Parametric_Uncertainty.RData")
 
 # (A) Baseline plot
-png("fig3.png", width = 9, height = 5.5, unit = "in", res = 600)
+png("fig3_new.png", width = 9, height = 5.5, unit = "in", res = 600)
 #pdf("Baseline_Uncertainty_SLR_GEV2.pdf", width = 9.5, height = 5.5)
 par(mfrow = c(2,2), mar = c(0, 1, 2, 0.75)+0.1, oma = c(3.5, 3, 0, 0.5)+0.1)
 

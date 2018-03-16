@@ -490,7 +490,8 @@ lower_full.90 <- sapply(1:10^4, function (x)
 # Mean (expected) return levels
 MC_full_mean <- apply(MC_full, 1, mean)
 
-pdf("Figures/figs7.pdf", width = 6, height = 7.5)
+#pdf("Figures/figs7.pdf", width = 6, height = 7.5)
+png("Figures/figs7.png", width = 6, height = 7.5, units = 'in', res = 300)
 
 par(oma = c(0,0,0,0)+0.1, mar = c(4,4,1,1), mfrow = c(2,1)) 
 plot.sf(coredata(year.res.max), pch = 21, bg = "white", lwd = 1.5,

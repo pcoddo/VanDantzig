@@ -76,6 +76,7 @@ plotRadCon <- function(df                   # dataframe with S1 and ST indices
     setEPS()
     postscript(fname)
   }
+  
  else{
     print('Plot not automatically saved')
     savePlot <- FALSE

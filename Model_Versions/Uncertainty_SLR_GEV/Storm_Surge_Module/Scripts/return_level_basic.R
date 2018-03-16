@@ -25,7 +25,7 @@ return_level_basic <- function(block_maxima, max_return_period, legend,...)
   q <- gevq(a, 1 - f[which((ceiling(-1/log(f)) - max_return_period <= 0))])
   d <- t(gev.rl.gradient(a = a, p = 1 - f))
   v <- apply(d, 1, q.form, m = mat)
-  plot(-1/log(f[1:length(q)]), q, log = "x", type = "n", xlim = c(0.1, max_return_period), 
+  plot(-1/log(f[1:length(q)]), q, log = "x", type = "n", xlim = c(0.85, max_return_period), 
        ...,
        xaxt = 'n',
        #xlab = "Return Period [years]", 
@@ -33,11 +33,24 @@ return_level_basic <- function(block_maxima, max_return_period, legend,...)
   #title("Return Level Plot")
   axis(1, lwd = 1.5, at=10^(seq(-1,log10(max_return_period), by = 1)), label=parse(text=paste("10^", seq(-1,log10(max_return_period), by = 1), sep="")))
   #axis(2, lwd = 1.5)
-  lines(-1/log(f[1:length(q)]), q, lty = 1, lwd = 2, col = "#0080FFFF")
+  
+  # old code
+  #lines(-1/log(f[1:length(q)]), q, lty = 1, lwd = 2, col = "#0080FFFF")
+  #points(-1/log((1:length(dat))/(length(dat) + 1))
+  #points(1/(1-(1:length(dat))/(length(dat) + 1))
+  
+  
+  # new code
+  lines(1/(1-(f[1:length(q)])), q, lty = 1, lwd = 2, col = "#0080FFFF")
   #polygon(x=c(-1/log(f[1:length(q)]), rev(-1/log(f[1:length(q)]))), y = c(q + 1.96 * sqrt(v[1:length(q)]), rev(q - 1.96 * sqrt(v[1:length(q)]))), col = "#0080FF40", border = NA)
   #lines(-1/log(f[1:length(q)]), q + 1.98 * sqrt(v[1:length(q)]), col = "#0080FFFF", lwd = 1.5)
   #lines(-1/log(f[1:length(q)]), q - 1.98 * sqrt(v[1:length(q)]), col = "#0080FFFF", lwd = 1.5)
-  points(-1/log((1:length(dat))/(length(dat) + 1)), sort(dat), lwd = 1.5, cex = 0.75, pch = 21, bg = "white")
+  
+  # old code
+  #points(-1/log((1:length(dat))/(length(dat) + 1)), sort(dat), lwd = 1.5, cex = 0.75, pch = 21, bg = "white")
+  
+  # new code
+  points(1/(1-(1:length(dat))/(length(dat) + 1)), sort(dat), lwd = 1.5, cex = 0.75, pch = 21, bg = "white")
   box(lwd = 1.5)
   
   if(legend == TRUE | legend == T)
