@@ -10,6 +10,9 @@
 # https://github.com/SALib/SALib
 #################################### 
 
+# Set working directory
+setwd("~/GitHub/vanDantzig/Model_Versions/Parametric_Uncertainty/Sensitivity_Analysis/Sobol/SALib")
+
 # Compile
 rm(list = ls())
 graphics.off()
@@ -34,28 +37,12 @@ source("../../../Scripts/priors.R")
  # sea_level_rate  = 0.008       # Rate of sea level rise (meter/year)
 
 # Read in Sobol Samples
-source("../../../Scripts/LHS.R")
+#source("../../../Scripts/LHS.R")
 #Sobol <- Parameters
-
-# Number of Sobol samples [2N(p+1)]
-#n_Sobol = 2*1000*(length(priors)+1)
-
-# Sample uniformly between [0,1]
-#q = seq(0,1, length.out = n_Sobol)
-
-# Set up array for Sobol samples
-uniform_sets = read.table("sobolParameterSets.txt", sep = " ", header = F)
-n_Sobol = length(uniform_sets[,1])
-
-Sobol = array(NA, dim = c(n_Sobol, length(priors)))
-Sobol = as.data.frame(Sobol)
-
-for(i in 1:length(priors)){
-  #Sobol[,i] = quantile(ecdf(Parameters[,i]), uniform_sets[,i])
-  Sobol[,i] = quantile(Parameters[,i], uniform_sets[,i])
-}
-
+Sobol <- read.table("sobolParameterSets.txt", sep = ' ', header = FALSE)
 names(Sobol) <- names(priors)
+
+n_Sobol = length(Sobol[,1])
 
 ###################################
 ### van Dantzig problem setup ###
