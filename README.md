@@ -55,21 +55,21 @@ For each model version, the following diagnostic plots are produced:
 Each version of the model also produces output for two types of sensitivity analysis, local (One-at-a-time (OAT)), and global (Sobol'). Instructions for running these analysis and producing associated figures are either in the scripts or in additional READMEs.
 
 #### Links to Paper Figures
-[Figure 1](https://github.com/scrim-network/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/SLR_Module/Figures/fig1.png)
-[Figure 2](https://github.com/scrim-network/VanDantzig/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module/Figuresfig2.png)
-[Figure 3](https://github.com/scrim-network/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Comparison/fig3.png)
-[Figure 4](https://github.com/scrim-network/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Objective Tradeoffs/Fig4.png)
-[Figure 5](https://github.com/scrim-network/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Threshold_Plot/Fig5.png)
-[Figure 6](https://github.com/scrim-network/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/OAT/Figures/Fig6.pdf)
-[Figure 7](https://github.com/scrim-network/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/Sobol/SALib/Output/Figures/fig7.pdf)
+[Figure 1](https://github.com/scrim-network/VanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/SLR_Module/Figures/fig1.png)
+[Figure 2](https://github.com/scrim-network/VanDantzig/tree/master/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module/Figuresfig2.png)
+[Figure 3](https://github.com/scrim-network/VanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Figures/Comparison/fig3.png)
+[Figure 4](https://github.com/scrim-network/VanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Figures/Objective Tradeoffs/Fig4.png)
+[Figure 5](https://github.com/scrim-network/vanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Figures/Threshold_Plot/Fig5.png)
+[Figure 6](https://github.com/scrim-network/vanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/OAT/Figures/Fig6.pdf)
+[Figure 7](https://github.com/scrim-network/vanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/Sobol/SALib/Output/Figures/fig7.pdf)
 ##### delete
-[Figure 1](https://github.com/pcoddo/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/SLR_Module/Figures/fig1.png)
-[Figure 2](https://github.com/pcoddo/VanDantzig/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module/Figuresfig2.png)
-[Figure 3](https://github.com/pcoddo/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Comparison/fig3.png)
-[Figure 4](https://github.com/pcoddo/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Objective Tradeoffs/Fig4.png)
-[Figure 5](https://github.com/pcoddo/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Threshold_Plot/Fig5.png)
-[Figure 6](https://github.com/pcoddo/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/OAT/Figures/Fig6.pdf)
-[Figure 7](https://github.com/pcoddo/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/Sobol/SALib/Output/Figures/fig7.pdf)
+[Figure 1](https://github.com/pcoddo/VanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/SLR_Module/Figures/fig1.png)
+[Figure 2](https://github.com/pcoddo/VanDantzig/vanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module/Figures/fig2.png)
+[Figure 3](https://github.com/pcoddo/VanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Figures/Comparison/fig3.png)
+[Figure 4](https://github.com/pcoddo/VanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Figures/Objective Tradeoffs/Fig4.png)
+[Figure 5](https://github.com/pcoddo/vanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Figures/Threshold_Plot/Fig5.png)
+[Figure 6](https://github.com/pcoddo/vanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/OAT/Figures/Fig6.pdf)
+[Figure 7](https://github.com/pcoddo/vanDantzig/tree/master/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/Sobol/SALib/Output/Figures/fig7.pdf)
 
 #### R Packages ####
 * zoo
