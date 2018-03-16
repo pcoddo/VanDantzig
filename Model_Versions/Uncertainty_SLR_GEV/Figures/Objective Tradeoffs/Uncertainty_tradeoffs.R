@@ -182,7 +182,7 @@ dev.off()
 
 
 
-png("Fig5.png", width = 8, height = 4, units = 'in', res = 300)
+png("../Threshold_Plot/Fig5.png", width = 8, height = 4, units = 'in', res = 300)
 
 par(oma = c(4.5,5,0,0)+0.5, mar = c(1,3,1,1), mfrow = c(1,2))
 plot(costs/1e+06, EV_p_exceed_transient, pch = 20, col = "gray", cex = 0.25, axes = FALSE,log = 'y',
