@@ -25,7 +25,7 @@ The Van Dantzig (1956) model uses a cost-benefit framework to determine the opti
 | sea_level_rate |   0.008   | Rate of sea level rise (meter/year)                                              |
 
 
-Our analysis is evaluates the effects of increasing parametric and structural model uncertainties using the Van Dantzig (1956) model as a baseline. Each component of the analysis is contained in the following folders:
+Our analysis is evaluates the effects of increasing parametric and structural model uncertainties using the Van Dantzig (1956) model as a baseline. The effects of these uncertainties are evaluated for four decision objectives (**Minimize Investment Costs, Maximize Reliability, Minimize Expected Damages, Minimize Total Costs**). Each component of the analysis is contained in the following folders:
 
 1. `Baseline_Model`
 2. `Parametric_Uncertainty`
@@ -33,12 +33,45 @@ Our analysis is evaluates the effects of increasing parametric and structural mo
 4. `Uncertainty_SLR_GEV`
 
 ### Model Versions ###
+
 * The `Baseline_Model` recreates the original anylsis described in Van Dantzig (1956), using the best-guess parameter values provided in *Section 6: "The Doubtful Constants."*
 * The `Parameteric_Uncertainty` version uses the same structure as the baseline, but introduces uncertainty in the parameter values.
 * The `Uncertainty_SLR` version introduces uncertainty in the model structure but implementing an updated sea-level rise model.
 * The `Uncertainty_SLR_GEV` version introduces storm surge projections generated using a generalized extreme value (GEV) analysis.
 
-### R Packages ###
+### Running the Model ###
+Each iteration of the model builds of the version preceding it, beginning with the **vanDantzig_baseline.R** file in the `Baseline_Model` folder. For example:
+* `Parametric_Uncertainty` > **vanDantzig_Uncertainty.R**
+* `Uncertainty_SLR` > **vanDantzig_SLR.R**
+* `Uncertainty_SLR_GEV` > **vanDantzig_SLR_GEV.R**
+
+For each model version, the following diagnostic plots are produced:
+1. 'Optimal' dike heightening compared to baseline model
+2. Pairwise tradeoff curves for the four decision objectives
+3. Pairwise scatter plots for model parameters
+4. Histograms for model parameters
+
+#### Sensitivity Analyses ####
+Each version of the model also produces output for two types of sensitivity analysis, local (One-at-a-time (OAT)), and global (Sobol'). Instructions for running these analysis and producing associated figures are either in the scripts or in additional READMEs.
+
+#### Links to Paper Figures
+[Figure 1](https://github.com/scrim-network/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/SLR_Module/Figures/fig1.png)
+[Figure 2](https://github.com/scrim-network/VanDantzig/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module/Figuresfig2.png)
+[Figure 3](https://github.com/scrim-network/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Comparison/fig3.png)
+[Figure 4](https://github.com/scrim-network/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Objective Tradeoffs/Fig4.png)
+[Figure 5](https://github.com/scrim-network/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Threshold_Plot/Fig5.png)
+[Figure 6](https://github.com/scrim-network/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/OAT/Figures/Fig6.pdf)
+[Figure 7](https://github.com/scrim-network/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/Sobol/SALib/Output/Figures/fig7.pdf)
+##### delete
+[Figure 1](https://github.com/pcoddo/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/SLR_Module/Figures/fig1.png)
+[Figure 2](https://github.com/pcoddo/VanDantzig/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Storm_Surge_Module/Figuresfig2.png)
+[Figure 3](https://github.com/pcoddo/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Comparison/fig3.png)
+[Figure 4](https://github.com/pcoddo/VanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Objective Tradeoffs/Fig4.png)
+[Figure 5](https://github.com/pcoddo/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Figures/Threshold_Plot/Fig5.png)
+[Figure 6](https://github.com/pcoddo/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/OAT/Figures/Fig6.pdf)
+[Figure 7](https://github.com/pcoddo/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/Sobol/SALib/Output/Figures/fig7.pdf)
+
+#### R Packages ####
 * zoo
 * lubridate
 * lhs
