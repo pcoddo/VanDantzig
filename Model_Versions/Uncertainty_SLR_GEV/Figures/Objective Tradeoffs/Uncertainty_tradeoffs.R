@@ -182,7 +182,7 @@ dev.off()
 
 
 
-png("threshold.png", width = 8, height = 4, units = 'in', res = 300)
+png("Fig5.png", width = 8, height = 4, units = 'in', res = 300)
 
 par(oma = c(4.5,5,0,0)+0.5, mar = c(1,3,1,1), mfrow = c(1,2))
 plot(costs/1e+06, EV_p_exceed_transient, pch = 20, col = "gray", cex = 0.25, axes = FALSE,log = 'y',
@@ -207,25 +207,6 @@ mtext( line=4, side=2,param.units[4], cex = 1)
 
 legend("bottomleft", "(A)", bty = 'n', inset = c(-0.08,0))
 box(lwd = 1.5)
-
-
-# png("scatterpoint2.png", width = 5, height =5, units = 'in', res = 300)
-# par(oma = c(0,0,0,0)+0.5, mar = c(5,5,1,1))
-# plot(costs, NPV_expected_losses, pch = 20, col = "gray", cex = 0.25, axes = FALSE, 
-#      yaxs = 'i', xaxs = 'i',
-#      xlim = c(0,2e+08), xlab = "",
-#      ylim = c(0,1e+07), ylab = "")
-# eaxis(side = 1, tck = -.045, labels = TRUE, lwd = 2)
-# eaxis(side = 2, tck = -.045, labels = TRUE, lwd = 2)
-# 
-# mtext( line=3.5, side=1,param.names[2], font = 2, cex = 1)
-# mtext( line=4.5, side=1,param.units[2], cex = 1)
-# 
-# mtext( line=5, side=2,param.names[3], font = 2, cex = 1)
-# mtext( line=4, side=2,param.units[3], cex = 1)
-# 
-# segments(x0 = 100, y0 = -1000, x1 = 100, y1 = 10^6, lty = 1, lwd = 2)
-# segments(x0 = -1e6, y0 = 10^6, x1 = 100, y1 = 10^6, lty = 1, lwd = 2)
 
 
 satisfy <- subset(Objectives, costs.v <= 10^8 & EV_p_exceed_transient.v <= 1e-4)
