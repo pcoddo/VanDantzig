@@ -10,7 +10,7 @@
 #################################### 
 
 # Set working directory
-#setwd("~/Documents/Grad/SCRiM/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/OAT")
+setwd("~/vanDantzig/Model_Versions/Uncertainty_SLR_GEV/Sensitivity_Analysis/OAT")
 
 # Compile
 rm(list = ls())
@@ -28,7 +28,6 @@ source("../../Scripts/priors.R")
 # Source parameters for sea level rise and storm surge modules
 source("Scripts/sample.R")
 source("Scripts/slr_OAT.R")
-
 Parameter_PDF <- Parameters 
 
 # Create vector to change parameters from 1% to 99% quantile of PDF
@@ -45,7 +44,7 @@ H_0 = 4.25
 year = 2015
 
 # Fix dike height at "optimal" level from baseline model
-X = 2.6
+X = 2.35
 
 # considered time horizon, in annual increments
 time = seq(0,T,by=1)
@@ -68,8 +67,8 @@ subsidence              = array(NA, dim = c(length(time), length(quantile_prior)
 sea_level_rise          = array(NA, dim = c(length(time), length(quantile_prior))) 
 
 # Create uniform arrays for all parameters based on expected value of priors
-  # Load posterior modes for GEV parameters
-  GEV_mode = read.table("../../Storm_Surge_Module/Output/posterior_mode.txt", header = T)
+# Load posterior modes for GEV parameters
+GEV_mode = read.table("../../Storm_Surge_Module/Output/posterior_mode.txt", header = T)
 
 V_p             = array(priors$V_p, length(quantile_prior))
 delta_prime_p   = array(priors$delta_prime_p, length(quantile_prior))
@@ -93,7 +92,7 @@ NPV_expected_losses_OAT     = array(NA, dim = c(length(quantile_prior), length(P
 EV_p_exceed_transient_OAT   = array(NA, dim = c(length(quantile_prior), length(Parameters)))
 
 # Run model for by holding all parameters constant and changing one at a time
-for(n in length(Parameters)){
+for(n in 1:length(Parameters)){
   
   V_p             = array(priors$V_p, length(quantile_prior))
   delta_prime_p   = array(priors$delta_prime_p, length(quantile_prior))
@@ -119,60 +118,70 @@ for(n in length(Parameters)){
   source("Scripts/exceedance_prob_OAT.R")
   
   # Analyze for each considered Deike heightening (eq. 1 in paper)
-  for(i in 1:length(quantile_prior)) {
-    
-    for (j in 1:length(time)) { 
-      
-      # Land subsidence over length of time horizon
-      subsidence[j,] = Parameters$subs_rate[i]*time[j]
-      
-      # Sea level rise over length of time horizon
-      sea_level_rise[j,] = sea_level_global(Parameters$a[i], Parameters$b[i], Parameters$c[i], Parameters$c.star[i], (Parameters$t.star[i] - year), j) /1000 #+ res.boot_proj[i,]
-
-      # Annual discounting factor as a function of time
-      discount_factor[j,] = 1/(1+Parameters$delta_prime_p[i])^time[j]
-
-      # The effective dike height is the current height minus the 
-      # combined effects of subsidence and sea-level rise
-      effective_height[,j,] = X - subsidence[j,] - sea_level_rise[j,]
-      
-      # Annual flood frequency using old observations and new effective heights 
-      # (assumes stationary flooding frequency)
-      
-      # Find expected values of effective heights for each year in time horizon
-      effective_means <- array(NA, dim = c(length(X), length(time)))
-      effective_means[,] <- mean(effective_height[,j,]) + H_0
- 
-      p_exceed_transient[,j,] = exceedance_prob(effective_means[,j]) 
-        
-      # Net Present Value of the discounted expected annual losses (damages due to flooding in a given year)
-      NPV_costs_flooding[,j,] = p_exceed_transient[,j,]*Parameters$V_p[i]*discount_factor[j,]
-    }
-    
+  
+  # Land subsidence over length of time horizon
+  subsidence = t(sapply(1:length(time), function(j) {
+    Parameters$subs_rate * time[j]   }))
+  
+  # Sea level rise over length of time horizon
+  sea_level_rise = t(sapply(1:length(time), function(j) {
+    sea_level_global(Parameters$a, Parameters$b, Parameters$c, Parameters$c.star, (Parameters$t.star - year), j) /1000  }))#+ res.boot_proj[i,]
+  
+  # Annual discounting factor as a function of time
+  discount_factor = t(sapply(1:length(time), function(j) {
+    1/(1+Parameters$delta_prime_p)^time[j]   }))
+  
+  # The effective dike height is the current height minus the 
+  # combined effects of subsidence and sea-level rise
+  effective_height[,,] = t(sapply(1:length(X), function(i) {
+    t(sapply(1:length(time), function(j) {
+      X - subsidence[j,] - sea_level_rise[j,]    }))   }))
+  
+  # Annual flood frequency using old observations and new effective heights 
+  # (assumes stationary flooding frequency)
+  
+  # Find expected values of effective heights for each year in time horizon
+  effective_means <- array(NA, dim = c(length(X), length(time)))
+  effective_means <- t(sapply(1:length(X), function(i) {
+    t(sapply(1:length(time), function(j) {
+      mean(effective_height[i,j,]) + H_0    }))     }))
+  
+  for(j in 1:length(time))
+  {  
+    p_exceed_transient[,j,] = t(sapply(1:length(X), function(i){
+      exceedance_prob(effective_means[i,j])   }))
+  }
+  
+  # Net Present Value of the discounted expected annual losses (damages due to flooding in a given year)
+  NPV_costs_flooding[,,] = t(sapply(1:length(X), function(i) {
+    t(sapply(1:length(time), function(j) {
+      p_exceed_transient[i,j,]*Parameters$V_p*discount_factor[j,]   }))   }))
+  
   # The costs of flood protection (dike building) - increase linearly with respect to height
-  costs[i] = Parameters$k_p[i]*X
+  costs = t(sapply(1:length(X), function(i) {
+    Parameters$k_p * X[i]   }))
   
   # The total discounted expected losses are the sum of the discounted expected annual losses
-  NPV_expected_losses[i]=sum(NPV_costs_flooding[,j,])
+  NPV_expected_losses = apply(NPV_costs_flooding, c(1,3), sum) 
   
   # Expected value of average annual flood frequency (mean of annual flood frequencies)
-  EV_p_exceed_transient[i]=mean(p_exceed_transient[,j,])
+  EV_p_exceed_transient = apply(p_exceed_transient, c(1,3), mean)
   
   # The total flood frequency over the life-time of the project is the sum of the flood frequencies,
   # assuming independence, as in the original paper
-  Total_flood_frequency[i]=sum(p_exceed_transient[,j,])
+  Total_flood_frequency = apply(p_exceed_transient, c(1,3), sum)
   
   # The total costs that depend on the dike height. This analysis neglects initial mobilization 
   # costs (I_0) in paper, as well as any costs extending beyond considered time horizon
-  total_costs[i] = costs[i] + NPV_expected_losses[i]
-  }
+  total_costs = t(sapply(1:length(X), function(i) {
+    costs[i,] + NPV_expected_losses[i,]   }))
   
-# Find the index of the EUM point (minimum along total costs)
-total_costs_OAT[,n] <- total_costs
-costs_OAT[,n] <- costs
-NPV_expected_losses_OAT[,n] <- NPV_expected_losses
-EV_p_exceed_transient_OAT[,n] <- EV_p_exceed_transient
-
+  
+  # Find the index of the EUM point (minimum along total costs)
+  total_costs_OAT[,n] <- total_costs
+  costs_OAT[,n] <- costs
+  NPV_expected_losses_OAT[,n] <- NPV_expected_losses
+  EV_p_exceed_transient_OAT[,n] <- EV_p_exceed_transient
   
 }
 
@@ -187,128 +196,101 @@ colnames(EV_p_exceed_transient_OAT)   <- names(Parameters)
 library(RColorBrewer)
 OAT_col <- brewer.pal(12, "Paired")
 
-# Set up color vectors for each objectives
-cost_col          = c(OAT_col[3], "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray")
-damages_col       = c(OAT_col[8], OAT_col[9], OAT_col[2], OAT_col[6], OAT_col[1], OAT_col[4], OAT_col[5], OAT_col[6], "dark gray", "dark gray", "dark gray", "dark gray")
-reliability_col   = c(OAT_col[8], OAT_col[9], OAT_col[6], OAT_col[4], OAT_col[5], OAT_col[7], "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray")
-total_cost_col    = c(OAT_col[8], OAT_col[9], OAT_col[2], OAT_col[6], OAT_col[1], OAT_col[4], OAT_col[5], OAT_col[7], OAT_col[3], "dark gray", "dark gray", "dark gray")
+# Create data frame for parameter names, descriptions, symbols, and colors
+param_name <- names(Parameters)
+param_desc <- c("Value of goods", "Effective discount rate", "Cost rate of heightening", "Subsidence rate", 
+                "Sea level rise in 2015", "Sea level rise rate", "Sea level rise acceleration", "Year of abrupt sea level rise", "Rate of abrupt sea level rise",
+                "GEV shape", "GEV location", "GEV scale")
+param_symbol <- c("(V)", expression("("*delta*"'"*")"), "(k)", expression("("*eta*")"), "(a)", "(b)", "(c)", "(t*)", "(c*)", expression("("*xi*")"), expression("("*mu*")"), expression("("*sigma*")"))
+param_color <- OAT_col
+
+param_table <- data.frame(param_name, param_desc, param_color)
+
+# Create color vectors for each objective set
+cost_col.1          <- array(NA, dim = length(Parameters))
+cost_col.2          <- array(NA, dim = length(Parameters))
+
+damages_col.1       <- array(NA, dim = length(Parameters)) 
+damages_col.2       <- array(NA, dim = length(Parameters)) 
+
+reliability_col.1   <- array(NA, dim = length(Parameters))
+reliability_col.2   <- array(NA, dim = length(Parameters))
+
+total_cost_col.1    <- array(NA, dim = length(Parameters))
+total_cost_col.2    <- array(NA, dim = length(Parameters))
+
+for(i in 1:length(Parameters))
+{
+  # Costs
+  if(costs_OAT[99,i]-costs_OAT[1,i]==0)
+  {
+    cost_col.1[i] <- "light gray"
+    cost_col.2[i] <- "dark gray"
+  } else 
+  {
+    cost_col.1[i] <- OAT_col[i]
+    cost_col.2[i] <- "black"
+  }
+  
+  # Damages
+  if(NPV_expected_losses_OAT[99,i]-NPV_expected_losses_OAT[1,i]==0)
+  {
+    damages_col.1[i] <- "light gray"
+    damages_col.2[i] <- "dark gray"
+  } else 
+  {
+    damages_col.1[i] <- OAT_col[i]
+    damages_col.2[i] <- "black"
+  }
+  
+  # Reliability
+  if(EV_p_exceed_transient_OAT[99,i]-EV_p_exceed_transient_OAT[1,i]==0)
+  {
+    reliability_col.1[i] <- "light gray"
+    reliability_col.2[i] <- "dark gray"
+  } else 
+  {
+    reliability_col.1[i] <- OAT_col[i]
+    reliability_col.2[i] <- "black"
+  }
+  
+  # Total Costs
+  if(total_costs_OAT[99,i]-total_costs_OAT[1,i]==0)
+  {
+    total_cost_col.1[i] <- "light gray"
+    total_cost_col.2[i] <- "dark gray"
+  } else 
+  {
+    total_cost_col.1[i] <- OAT_col[i]
+    total_cost_col.2[i] <- "black"
+  }
+}
+
 
 # Objective plots
-pdf(file = "Figures/OAT_Objectives.pdf", width = 8, height = 8)
-par(oma = c(0,0,0,0)+0.1, mar = c(5,5,2,1)+0.1, mfrow = c(2,2))
+pdf(file = "Figures/Fig6.pdf", width = 5.75, height = 8.5)
+par(oma = c(3.5,0.75,0.5,4.5), mar = c(1,0.25,1,0.5)+0.1, mfcol = c(4,2))
+layout(matrix(c(1:8), 4, 2, byrow = F), widths = c(3.4, 2.1), heights = c(rep(2.1, 4)))
 
-matplot(quantile_prior, (costs_OAT/1e+06), type = 'l', lty = 1, lwd = 2, 
-        col = c("light gray", "light gray", OAT_col[3], "light gray", "light gray", "light gray", "light gray", "light gray", "light gray", "light gray", "light gray", "light gray"),
-        xlab = "Quantile of prior (%)",
-        ylab = "Costs (million Guilders)",
-        xaxt='n',
-        las = 0)
-axis(side = 1, at = c(0.01, 0.25, 0.5, 0.75, 0.99), labels = c(1, 25, 50, 75, 99))
-abline(v = 0.5, lty = 2)
-box(lwd = 1.5)
-mtext("A. Investment Costs", font = 2, side = 3, line = 0.25, at = -0.03, adj = c(0,0))
-
-legend("topleft",
-       names(Parameters),
-       ncol = 2,
-       pch = 22, 
-       bty = 'n',
-       pt.bg = c("light gray", "light gray", OAT_col[3], "light gray", "light gray", "light gray", "light gray", "light gray", "light gray", "light gray", "light gray", "light gray"),
-       col = c("dark gray", "dark gray", "black", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray"),
-       text.col = c("dark gray", "dark gray", "black", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray"),
-       cex = 1,
-       pt.cex = 1.5,
-       inset = c(0.01, -0.02))
-
-matplot(quantile_prior, (NPV_expected_losses_OAT/1e+06), type = 'l', lty = 1, lwd = 2, 
-        col = c(OAT_col[1], OAT_col[2], NA, OAT_col[4:9], NA, NA, NA),
-        xlab = "Quantile of prior (%)",
-        ylab = "Costs (million Guilders)",
-        xaxt='n',
-        las = 0)
-axis(side = 1, at = c(0.01, 0.25, 0.5, 0.75, 0.99), labels = c(1, 25, 50, 75, 99))
-abline(v = 0.5, lty = 2)
-box(lwd = 1.5)
-mtext("B. NPV: Damages", font = 2, side = 3, line = 0.25, at = -0.03, adj = c(0,0))
-
-legend("topleft",
-       names(Parameters),
-       ncol = 2,
-       pch = 22, 
-       bty = 'n',
-       pt.bg = c(OAT_col[1], OAT_col[2], "light gray", OAT_col[4:9], "light gray", "light gray", "light gray"),
-       col = c("black", "black", "dark gray", "black", "black", "black", "black", "black", "black", "dark gray", "dark gray", "dark gray"),
-       text.col = c("black", "black", "dark gray", "black", "black", "black", "black", "black", "black", "dark gray", "dark gray", "dark gray"),
-       cex = 1,
-       pt.cex = 1.5,
-       inset = c(0.01, -0.02))
-
-matplot(quantile_prior, (EV_p_exceed_transient_OAT), type = 'l', lty = 1, lwd = 2, 
-        col = c("light gray", "light gray", "light gray", OAT_col[4:9], "light gray", "light gray", "light gray"), 
-        xlab = "Quantile of prior (%)",
-        ylab = "Expected flood frequency (1/yr)",
-        xaxt='n',
-        las = 0)
-axis(side = 1, at = c(0.01, 0.25, 0.5, 0.75, 0.99), labels = c(1, 25, 50, 75, 99))
-abline(v = 0.5, lty = 2)
-box(lwd = 1.5)
-mtext("C. Reliability", font = 2, side = 3, line = 0.25, at = -0.03, adj = c(0,0))
-
-legend("topleft",
-       names(Parameters),
-       ncol = 2,
-       pch = 22, 
-       bty = 'n',
-       pt.bg = c("light gray", "light gray", "light gray", OAT_col[4:9], "light gray", "light gray", "light gray"), 
-       col = c("dark gray", "dark gray", "dark gray", "black", "black", "black", "black", "black", "black", "dark gray", "dark gray", "dark gray"),
-       text.col = c("dark gray", "dark gray", "dark gray", "black", "black", "black", "black", "black", "black", "dark gray", "dark gray", "dark gray"),
-       cex = 1,
-       pt.cex = 1.5,
-       inset = c(0.01, -0.02))
-
-matplot(quantile_prior, (total_costs_OAT/1e+06), type = 'l', lty = 1, lwd = 2, 
-        col = OAT_col,
-        xlab = "Quantile of prior (%)",
-        ylab = "Costs (million Guilders)",
-        xaxt='n',
-        las = 0)
-axis(side = 1, at = c(0.01, 0.25, 0.5, 0.75, 0.99), labels = c(1, 25, 50, 75, 99))
-abline(v = 0.5, lty = 2)
-box(lwd = 1.5)
-mtext("D. NPV: Total Costs", font = 2, side = 3, line = 0.25, at = -0.03, adj = c(0,0))
-
-legend("topleft",
-       names(Parameters),
-       ncol = 2,
-       pch = 22, 
-       bty = 'n',
-       pt.bg = OAT_col,
-       col = "black",
-       cex = 1,
-       pt.cex = 1.5,
-       inset = c(0.01, -0.02))
-
-dev.off()
-
-############################
-### Tornado diagram
+# ############################
+# ### Tornado diagram
 
 # Determine total parameter ranges for each Objective
-  costs_range <- sapply(1:length(Parameters), function(x){
-    max(costs_OAT[,x]) - min(costs_OAT[,x])
-  })
-  
-  NPV_expected_losses_range <- sapply(1:length(Parameters), function(x){
-    max(NPV_expected_losses_OAT[,x]) - min(NPV_expected_losses_OAT[,x])
-  })
-  
-  EV_p_exceed_transient_range <- sapply(1:length(Parameters), function(x){
-    max(EV_p_exceed_transient_OAT[,x]) - min(EV_p_exceed_transient_OAT[,x])
-  })
-  
-  total_costs_range <- sapply(1:length(Parameters), function(x){
-    max(total_costs_OAT[,x]) - min(total_costs_OAT[,x])
-  })
+costs_range <- sapply(1:length(Parameters), function(x){
+  max(costs_OAT[,x]) - min(costs_OAT[,x])
+})
+
+NPV_expected_losses_range <- sapply(1:length(Parameters), function(x){
+  max(NPV_expected_losses_OAT[,x]) - min(NPV_expected_losses_OAT[,x])
+})
+
+EV_p_exceed_transient_range <- sapply(1:length(Parameters), function(x){
+  max(EV_p_exceed_transient_OAT[,x]) - min(EV_p_exceed_transient_OAT[,x])
+})
+
+total_costs_range <- sapply(1:length(Parameters), function(x){
+  max(total_costs_OAT[,x]) - min(total_costs_OAT[,x])
+})
 
 names(costs_range) <- names(Parameters)
 names(NPV_expected_losses_range) <- names(Parameters)
@@ -317,48 +299,49 @@ names(total_costs_range) <- names(Parameters)
 
 # Determine percentage of total range above and below 50% quantile (center point)
 # Below (quantile 50 - quantile 1)
-  costs_range_minus <- sapply(1:length(Parameters), function(x) {
-    abs((costs_OAT[50,x] - costs_OAT[1,x]) / costs_range[x])
-  })
-  
-  NPV_expected_losses_range_minus <- sapply(1:length(Parameters), function(x) {
-    abs((NPV_expected_losses_OAT[50,x] - NPV_expected_losses_OAT[1,x]) / NPV_expected_losses_range[x])
-  })
-  
-  EV_p_exceed_transient_range_minus <- sapply(1:length(Parameters), function(x) {
-    abs((EV_p_exceed_transient_OAT[50,x] - EV_p_exceed_transient_OAT[1,x]) / EV_p_exceed_transient_range[x])
-  })
-  
-  total_costs_range_minus <- sapply(1:length(Parameters), function(x) {
-    abs((total_costs_OAT[50,x] - total_costs_OAT[1,x]) / total_costs_range[x])
-  })
+costs_range_minus <- sapply(1:length(Parameters), function(x) {
+  abs((costs_OAT[50,x] - costs_OAT[1,x]) / costs_range[x])
+})
+
+NPV_expected_losses_range_minus <- sapply(1:length(Parameters), function(x) {
+  abs((NPV_expected_losses_OAT[50,x] - NPV_expected_losses_OAT[1,x]) / NPV_expected_losses_range[x])
+})
+
+EV_p_exceed_transient_range_minus <- sapply(1:length(Parameters), function(x) {
+  abs((EV_p_exceed_transient_OAT[50,x] - EV_p_exceed_transient_OAT[1,x]) / EV_p_exceed_transient_range[x])
+})
+
+total_costs_range_minus <- sapply(1:length(Parameters), function(x) {
+  abs((total_costs_OAT[50,x] - total_costs_OAT[1,x]) / total_costs_range[x])
+})
 
 # Above (quantile 99 - quantile 50)
-  costs_range_plus <- sapply(1:length(Parameters), function(x) {
-    abs((costs_OAT[99,x] - costs_OAT[50,x]) / costs_range[x])
-  })
-  
-  NPV_expected_losses_range_plus <- sapply(1:length(Parameters), function(x) {
-    abs((NPV_expected_losses_OAT[99,x] - NPV_expected_losses_OAT[50,x]) / NPV_expected_losses_range[x])
-  })
-  
-  EV_p_exceed_transient_range_plus <- sapply(1:length(Parameters), function(x) {
-    abs((EV_p_exceed_transient_OAT[99,x] - EV_p_exceed_transient_OAT[50,x]) / EV_p_exceed_transient_range[x])
-  })
-  
-  total_costs_range_plus <- sapply(1:length(Parameters), function(x) {
-    abs((total_costs_OAT[99,x] - total_costs_OAT[50,x]) / total_costs_range[x])
-  })
+costs_range_plus <- sapply(1:length(Parameters), function(x) {
+  abs((costs_OAT[99,x] - costs_OAT[50,x]) / costs_range[x])
+})
+
+NPV_expected_losses_range_plus <- sapply(1:length(Parameters), function(x) {
+  abs((NPV_expected_losses_OAT[99,x] - NPV_expected_losses_OAT[50,x]) / NPV_expected_losses_range[x])
+})
+
+EV_p_exceed_transient_range_plus <- sapply(1:length(Parameters), function(x) {
+  abs((EV_p_exceed_transient_OAT[99,x] - EV_p_exceed_transient_OAT[50,x]) / EV_p_exceed_transient_range[x])
+})
+
+total_costs_range_plus <- sapply(1:length(Parameters), function(x) {
+  abs((total_costs_OAT[99,x] - total_costs_OAT[50,x]) / total_costs_range[x])
+})
 
 # Normalize total range to 1 by dividing by largest range in each series
 costs_range                   = costs_range/max(costs_range)
 NPV_expected_losses_range     = NPV_expected_losses_range/max(NPV_expected_losses_range)
 EV_p_exceed_transient_range   = EV_p_exceed_transient_range/max(EV_p_exceed_transient_range)
 total_costs_range             = total_costs_range/max(total_costs_range)
-  
+
 # Normalize 50% +/- vectors to 1
 # This makes each variance a fraction of the largest range, as well as showing what percentage
 # of each range lies above and below the center line
+
 for(i in 1:length(Parameters)){
   costs_range_plus[i] = costs_range_plus[i] * costs_range[i]
   costs_range_minus[i] = costs_range_minus[i] * costs_range[i]
@@ -380,17 +363,18 @@ EV_p_exceed_transient_range   = sort(EV_p_exceed_transient_range, decreasing = T
 total_costs_range             = sort(total_costs_range, decreasing = TRUE)
 
 # Sort the plus/minus vectors so they represent the same decreasing order as the full range
-costs_range_plus = costs_range_plus[order(match(names(costs_range_plus), names(costs_range)))]
-costs_range_minus = costs_range_minus[order(match(names(costs_range_minus), names(costs_range)))]
+costs_range_plus = costs_range_plus[order(match(names(costs_range_plus), names(total_costs_range)))]
+costs_range_minus = costs_range_minus[order(match(names(costs_range_minus), names(total_costs_range)))]
 
-NPV_expected_losses_range_plus = NPV_expected_losses_range_plus[order(match(names(NPV_expected_losses_range_plus), names(NPV_expected_losses_range)))]
-NPV_expected_losses_range_minus = NPV_expected_losses_range_minus[order(match(names(NPV_expected_losses_range_minus), names(NPV_expected_losses_range)))]
+NPV_expected_losses_range_plus = NPV_expected_losses_range_plus[order(match(names(NPV_expected_losses_range_plus), names(total_costs_range)))]
+NPV_expected_losses_range_minus = NPV_expected_losses_range_minus[order(match(names(NPV_expected_losses_range_minus), names(total_costs_range)))]
 
-EV_p_exceed_transient_range_plus = EV_p_exceed_transient_range_plus[order(match(names(EV_p_exceed_transient_range_plus), names(EV_p_exceed_transient_range)))]
-EV_p_exceed_transient_range_minus = EV_p_exceed_transient_range_minus[order(match(names(EV_p_exceed_transient_range_minus), names(EV_p_exceed_transient_range)))]
+EV_p_exceed_transient_range_plus = EV_p_exceed_transient_range_plus[order(match(names(EV_p_exceed_transient_range_plus), names(total_costs_range)))]
+EV_p_exceed_transient_range_minus = EV_p_exceed_transient_range_minus[order(match(names(EV_p_exceed_transient_range_minus), names(total_costs_range)))]
 
 total_costs_range_plus = total_costs_range_plus[order(match(names(total_costs_range_plus), names(total_costs_range)))]
 total_costs_range_minus = total_costs_range_minus[order(match(names(total_costs_range_minus), names(total_costs_range)))]
+
 
 ### Plot results
 # Set up matrix for positioning polygons
@@ -411,98 +395,167 @@ for(i in 1:length(Parameters)){
   lab_text[i,2] = start[i,2]-(width/2)
 }
 
-# Set up color vectors for each objectives
-cost_col          = c(OAT_col[3], "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray")
-damages_col       = c(OAT_col[8], OAT_col[9], OAT_col[2], OAT_col[6], OAT_col[1], OAT_col[4], OAT_col[5], OAT_col[7], "dark gray", "dark gray", "dark gray", "dark gray")
-reliability_col   = c(OAT_col[8], OAT_col[9], OAT_col[6], OAT_col[4], OAT_col[5], OAT_col[7], "dark gray", "dark gray", "dark gray", "dark gray", "dark gray", "dark gray")
-total_cost_col    = c(OAT_col[8], OAT_col[9], OAT_col[2], OAT_col[6], OAT_col[1], OAT_col[4], OAT_col[5], OAT_col[7], OAT_col[3], "dark gray", "dark gray", "dark gray")
+# Set up color vectors and labels for Total Costs objective (all 4 objectives will be plotted in this order)
+total_cost_lab = as.character(param_table$param_desc[order(match(names(Parameters), names(total_costs_range)))])
+total_cost_col = as.character(param_table$param_color[order(match(names(Parameters), names(total_costs_range)))])
+symbol_lab = param_symbol[order(match(names(Parameters), names(total_costs_range)))]
+
+total_cost_col.3 = as.character(total_cost_col.2[order(match(names(Parameters), names(total_costs_range)))])
+cost_col.3 = as.character(cost_col.2[order(match(names(Parameters), names(total_costs_range)))])
+damages_col.3 = as.character(damages_col.2[order(match(names(Parameters), names(total_costs_range)))])
+reliability_col.3 = as.character(reliability_col.2[order(match(names(Parameters), names(total_costs_range)))])
 
 # Plot results
-pdf("Figures/OAT_Tornado.pdf", width = 6, height = 6)
-par(oma = c(0,0,0,0)+0.1, mar = c(5,1,2,1)+0.1, mfrow = c(2,2))
+#pdf(file = "Figures/bigtest2.pdf", width = 3, height = 9)
+#par(oma = c(4,0,0,0)+0.2, mar = c(2,1,1,1)+0.1, mfcol = c(4,1))
+
+# Total Costs
+plot(0, type = 'n',
+     xlim = c(-1, 2), ylim = c(-2, 1.15),
+     xaxt = 'n', yaxt = 'n',
+     xaxs = 'i',
+     xlab = "", ylab = "")
+
+for(i in 1:length(Parameters)) {
+  if(total_costs_range[i]>0){
+    polygon(x = c((0-total_costs_range_minus[i]), (0+total_costs_range_plus[i]), (0+total_costs_range_plus[i]), (0-total_costs_range_minus[i])),
+            y = c(start[i,2], start[i,2], (start[i,2] - width), (start[i,2]-width)), 
+            border = "black",
+            col = total_cost_col[i])
+  }
+}
+text(x = 1.7, y = lab_text[,2], cex = 1, labels = total_cost_lab, adj = c(1,0.5), col = total_cost_col.3)
+text(x = 1.8, y = lab_text[,2], cex = 1, labels = symbol_lab, adj = c(0,0.5), col = total_cost_col.3)
+mtext("A. Discounted total costs", font = 1, side = 3, line = 0.25, at = -1, adj = c(0,0), cex = 0.90)
+axis(side = 1, at = seq(-1,1, by = 0.5), labels = FALSE, tck = -0.02)
+segments(0, -2, 0, 1.1, lty = 2)
+box(lwd = 1.3)
+
+# Reliability
+plot(0, type = 'n',
+     xlim = c(-1, 2), ylim = c(-2, 1.15),
+     xaxt = 'n', yaxt = 'n',
+     xaxs = 'i',
+     xlab = "", ylab = "")
+
+for(i in 1:length(Parameters)) {
+  if(total_costs_range[i]>0){
+    polygon(x = c((0-EV_p_exceed_transient_range_minus[i]), (0+EV_p_exceed_transient_range_plus[i]), (0+EV_p_exceed_transient_range_plus[i]), (0-EV_p_exceed_transient_range_minus[i])),
+            y = c(start[i,2], start[i,2], (start[i,2] - width), (start[i,2]-width)), 
+            border = "black",
+            col = total_cost_col[i])
+  }
+}
+text(x = 1.7, y = lab_text[,2], cex = 1, labels = total_cost_lab, adj = c(1,0.5), col = reliability_col.3)
+text(x = 1.8, y = lab_text[,2], cex = 1, labels = symbol_lab, adj = c(0,0.5), col = reliability_col.3)
+mtext("B. Reliability", font = 1, side = 3, line = 0.25, at = -1, adj = c(0,0), cex = 0.90)
+axis(side = 1, at = seq(-1,1, by = 0.5), labels = FALSE, tck = -0.02)
+segments(0, -2, 0, 1.1, lty = 2)
+box(lwd = 1.3)
 
 # Costs
 plot(0, type = 'n',
-     xlim = c(-1, 1.25), ylim = c(-2, 1),
+     xlim = c(-1, 2), ylim = c(-2, 1.15),
      xaxt = 'n', yaxt = 'n',
      xaxs = 'i',
-     xlab = "Percent of total variance", ylab = "")
+     xlab = "", ylab = "")
 
-  for(i in 1:length(Parameters)) {
-    if(costs_range[i]>0){
-      polygon(x = c((0-costs_range_minus[i]), (0+costs_range_plus[i]), (0+costs_range_plus[i]), (0-costs_range_minus[i])),
-              y = c(start[i,2], start[i,2], (start[i,2] - width), (start[i,2]-width)), 
-              border = "black",
-              col = cost_col[i])
-    }
+for(i in 1:length(Parameters)) {
+  if(total_costs_range[i]>0){
+    polygon(x = c((0-costs_range_minus[i]), (0+costs_range_plus[i]), (0+costs_range_plus[i]), (0-costs_range_minus[i])),
+            y = c(start[i,2], start[i,2], (start[i,2] - width), (start[i,2]-width)), 
+            border = "black",
+            col = total_cost_col[i])
   }
-axis(side = 1, at = seq(-1,1, by = 0.2), labels = seq(-100, 100, by = 20))
-text(x = lab_text[,1], y = lab_text[,2], labels = c(expression("k", "", "", "", "", "", "", "", "", "", "", ""  )))
-abline(v = 0, lty = 2)
-box(lwd = 1.5)
-mtext("A. Investment Costs", font = 2, side = 3, line = 0.25, at = -1, adj = c(0,0))
+}
+
+text(x = 1.7, y = lab_text[,2], cex = 1, labels = total_cost_lab, adj = c(1,0.5), col = cost_col.3)
+text(x = 1.8, y = lab_text[,2], cex = 1, labels = symbol_lab, adj = c(0,0.5), col = cost_col.3)
+mtext("C. Investment costs", font = 1, side = 3, line = 0.25, at = -1, adj = c(0,0), cex = 0.90)
+axis(side = 1, at = seq(-1,1, by = 0.5), labels = FALSE, tck = -0.02)
+segments(0, -2, 0, 1.1, lty = 2)
+box(lwd = 1.3)
 
 # Damages
 plot(0, type = 'n',
-     xlim = c(-1, 1.25), ylim = c(-2, 1),
+     xlim = c(-1, 2), ylim = c(-2, 1.15),
      xaxt = 'n', yaxt = 'n',
      xaxs = 'i',
-     xlab = "Percent of total variance", ylab = "")
+     xlab = "", ylab = "")
 
-  for(i in 1:length(Parameters)) {
-    if(NPV_expected_losses_range[i]>0){
-      polygon(x = c((0-NPV_expected_losses_range_minus[i]), (0+NPV_expected_losses_range_plus[i]), (0+NPV_expected_losses_range_plus[i]), (0-NPV_expected_losses_range_minus[i])),
-              y = c(start[i,2], start[i,2], (start[i,2] - width), (start[i,2]-width)), 
-              border = "black",
-              col = damages_col[i])
-    }
+for(i in 1:length(Parameters)) {
+  if(total_costs_range[i]>0){
+    polygon(x = c((0-NPV_expected_losses_range_minus[i]), (0+NPV_expected_losses_range_plus[i]), (0+NPV_expected_losses_range_plus[i]), (0-NPV_expected_losses_range_minus[i])),
+            y = c(start[i,2], start[i,2], (start[i,2] - width), (start[i,2]-width)), 
+            border = "black",
+            col = total_cost_col[i])
   }
-axis(side = 1, at = seq(-1,1, by = 0.2), labels = seq(-100, 100, by = 20))
-text(x = lab_text[,1], y = lab_text[,2], labels = c("t*", "c*", delta~"'", "b", "V", expression(eta), "a", "c", "", "", "", ""))
-abline(v = 0, lty = 2)
-box(lwd = 1.5)
-mtext("B. NPV: Damages", font = 2, side = 3, line = 0.25, at = -1, adj = c(0,0))
+}
+axis(side = 1, at = seq(-1,1, by = 0.5), labels = seq(-100, 100, by = 50), cex.axis = 1.15)
+text(x = 1.7, y = lab_text[,2], cex = 1, labels = total_cost_lab, adj = c(1,0.5), col = damages_col.3)
+text(x = 1.8, y = lab_text[,2], cex = 1, labels = symbol_lab, adj = c(0,0.5), col = damages_col.3)
+mtext("D. Discounted damages", font = 1, side = 3, line = 0.25, at = -1, adj = c(0,0), cex = 0.90)
+mtext("Percent of total variance", side = 1, at = 0, adj = c(0.5, 0.5), line = 3, cex = 0.85)
+segments(0, -2, 0, 1.1, lty = 2)
+box(lwd = 1.3)
 
-  # Reliability
-plot(0, type = 'n',
-     xlim = c(-1, 1.25), ylim = c(-2, 1),
-     xaxt = 'n', yaxt = 'n',
-     xaxs = 'i',
-     xlab = "Percent of total variance", ylab = "")
+########################
+### Objective plots
+# Total Costs
+matplot(quantile_prior, (total_costs_OAT/1e+06), type = 'l', lty = 1, lwd = 2, 
+        col = total_cost_col.1, 
+        xlab = NA,
+        ylab = NA,
+        xaxt='n',
+        axes = FALSE,
+        las = 0)
+abline(v = 0.5, lty = 2)
+box(lwd = 1.3)
+mtext("Costs (million Guilders)", font = 1, side = 4, line = 3.75, cex = 0.90)
+axis(side = 1, at = c(0.01, 0.25, 0.5, 0.75, 0.99), labels = FALSE, tck = -0.02)
+axis(4, cex.axis = 1.15, las = 1)
 
-  for(i in 1:length(Parameters)) {
-    if(EV_p_exceed_transient_range[i]>0){
-      polygon(x = c((0-EV_p_exceed_transient_range_minus[i]), (0+EV_p_exceed_transient_range_plus[i]), (0+EV_p_exceed_transient_range_plus[i]), (0-EV_p_exceed_transient_range_minus[i])),
-              y = c(start[i,2], start[i,2], (start[i,2] - width), (start[i,2]-width)), 
-              border = "black",
-              col = reliability_col[i])
-    }
-  }
-axis(side = 1, at = seq(-1,1, by = 0.2), labels = seq(-100, 100, by = 20))
-text(x = lab_text[,1], y = lab_text[,2], labels = c("t*", "c*", "b", expression(eta), "a", "c", "", "", "", "", "", ""))
-abline(v = 0, lty = 2)
-box(lwd = 1.5)
-mtext("C. Reliability", font = 2, side = 3, line = 0.25, at = -1, adj = c(0,0))
+# Reliability
+matplot(quantile_prior, (EV_p_exceed_transient_OAT), type = 'l', lty = 1, lwd = 2, 
+        col = reliability_col.1, 
+        xlab = NA,
+        ylab = NA,
+        xaxt='n',
+        axes = FALSE,
+        las = 0)
+abline(v = 0.5, lty = 2)
+box(lwd = 1.3)
+mtext("Flood frequency (1/yr)", font = 1, side = 4, line = 3.75, cex = 0.9)
+axis(side = 1, at = c(0.01, 0.25, 0.5, 0.75, 0.99), labels = FALSE, tck = -0.02)
+axis(4, cex.axis = 1.15, las = 1)
 
-  # Total Costs
-plot(0, type = 'n',
-     xlim = c(-1, 1.25), ylim = c(-2, 1),
-     xaxt = 'n', yaxt = 'n',
-     xaxs = 'i',
-     xlab = "Percent of total variance", ylab = "")
+# Investment Costs
+matplot(quantile_prior, (costs_OAT/1e+06), type = 'l', lty = 1, lwd = 2, 
+        col = cost_col.1,
+        xlab = NA,
+        ylab = NA,
+        xaxt='n',
+        axes = FALSE,
+        las = 0)
+abline(v = 0.5, lty = 2)
+box(lwd = 1.3)
+mtext("Costs (million Guilders)", font = 1, side = 4, line = 3.75, cex = 0.9)
+axis(side = 1, at = c(0.01, 0.25, 0.5, 0.75, 0.99), labels = FALSE, tck = -0.02)
+axis(4, cex.axis = 1.15, las = 1)
 
-  for(i in 1:length(Parameters)) {
-    if(total_costs_range[i]>0){
-      polygon(x = c((0-total_costs_range_minus[i]), (0+total_costs_range_plus[i]), (0+total_costs_range_plus[i]), (0-total_costs_range_minus[i])),
-              y = c(start[i,2], start[i,2], (start[i,2] - width), (start[i,2]-width)), 
-              border = "black",
-              col = total_cost_col[i])
-    }
-  }
-axis(side = 1, at = seq(-1,1, by = 0.2), labels = seq(-100, 100, by = 20))
-text(x = lab_text[,1], y = lab_text[,2], labels = c("t*", "c*", delta~"'", "b", "V", expression(eta), "a", "c", "k", "", "", ""))
-abline(v = 0, lty = 2)
-box(lwd = 1.5)
-mtext("D. NPV: Total Costs", font = 2, side = 3, line = 0.25, at = -1, adj = c(0,0))
+# Damages
+matplot(quantile_prior, (NPV_expected_losses_OAT/1e+06), type = 'l', lty = 1, lwd = 2, 
+        col = damages_col.1, 
+        xlab = NA,
+        ylab = NA,
+        xaxt='n',
+        axes = FALSE,
+        las = 0)
+axis(side = 1, at = c(0.01, 0.25, 0.5, 0.75, 0.99), labels = c(1, 25, 50, 75, 99), cex.axis = 1.15)
+mtext("Quantile of prior (%)", side = 1, line = 3, at = 0.5, cex = 0.85, adj = c(0.5, 0.5))
+abline(v = 0.5, lty = 2)
+box(lwd = 1.3)
+mtext("Costs (million Guilders)", font = 1, side = 4, line = 3.75, cex = 0.9)
+axis(4, cex.axis = 1.15, las = 1)
 
 dev.off()
